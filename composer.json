@@ -1,0 +1,13 @@
+{
+    "name": "ssnepenthe/metis",
+    "description": "Easy custom post types, taxonomies and metaboxes in WordPress.",
+    "type": "library",
+    "homepage": "https://github.com/ssnepenthe/metis",
+    "license": "GPL-2.0",
+    "require": {
+        "php": ">=5.4"
+    },
+    "autoload": {
+        "psr-4": { "SSNepenthe\\Metis\\": "src/" },
+    }
+}
