@@ -53,6 +53,8 @@ class PostType {
 			'supports' => [ 'title', 'editor', 'thumbnail' ],
 			'register_meta_box_cb' => [ $this, 'meta_box_cb' ],
 			'taxonomies' => [],
+			'has_archive' => true,
+			'rewrite' => [ 'with_front' => false ],
 		];
 
 		if ( ! isset( $args['labels'] ) || empty( $args['labels'] ) ) {
