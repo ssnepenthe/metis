@@ -75,6 +75,8 @@ class PostType {
 		$meta_box->set_nonce( $this->nonce );
 
 		$this->meta_boxes[] = $meta_box;
+
+		return $this;
 	}
 
 	public function add_taxonomy( Taxonomy $taxonomy ) {
@@ -82,6 +84,8 @@ class PostType {
 
 		$this->taxonomies[] = $taxonomy;
 		$this->args['taxonomies'][] = $taxonomy->slug();
+
+		return $this;
 	}
 
 	public function init() {
