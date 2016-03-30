@@ -61,7 +61,6 @@ class Taxonomy {
 
 		$this->args = wp_parse_args( $args, $default_args );
 		$this->slug = $slug;
-		$this->object = $object;
 	}
 
 	public function register_taxonomy() {
