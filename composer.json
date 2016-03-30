@@ -7,6 +7,9 @@
     "require": {
         "php": ">=7.0"
     },
+    "require-dev": {
+        "psy/psysh": "^0.7.2"
+    },
     "autoload": {
         "psr-4": { "SSNepenthe\\Metis\\": "src/" }
     }
