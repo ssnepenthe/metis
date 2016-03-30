@@ -201,7 +201,7 @@ class Toolbar {
 
 		$args['href'] = wp_nonce_url(
 			$args['href'],
-			sprintf( '%s\\%s', __CLASS__, $args['id'] ).
+			sprintf( '%s\\%s', __CLASS__, $args['id'] ),
 			'_mtbnonce'
 		);
 
