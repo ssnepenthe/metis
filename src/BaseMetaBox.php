@@ -50,7 +50,7 @@ abstract class BaseMetaBox {
 	public function sanitize( $input ) {
 		if ( is_array( $input ) ) {
 			return array_filter(
-				array_map( 'trim', array_map( 'wp_kses_post', $meta_value ) )
+				array_map( 'trim', array_map( 'wp_kses_post', $input ) )
 			);
 		}
 
