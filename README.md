@@ -2,6 +2,8 @@
 A small framework for simplifying some common WordPress tasks.
 
 ## Usage
+Requires php >= 7.0.
+
 Metis can help you to quickly register content types with custom meta boxes and add custom menus to the admin bar.
 
 ### Content Types
@@ -57,7 +59,7 @@ add_action( 'plugins_loaded', function() {
 } );
 ```
 
-To add a metabox to the edit page for your post type, create a class which extends `\SSNepenthe\Metis\BaseMetaBox`.
+To add a metabox to the edit page for your post type, create a class which extends `SSNepenthe\Metis\BaseMetaBox`.
 
 At a minimum, you need to supply a protected `$args` array which contains values for `id` and `title`, as well as a public `render` method to print the meta box content.
 
@@ -68,7 +70,7 @@ It might look something like this:
 ```php
 use SSNepenthe\Metis\BaseMetaBox;
 
-class SourceMetaBox extends BaseMetaBox {
+class BookMetaBox extends BaseMetaBox {
 	protected $args = [
 		'id' => 'myplugin-source-meta-box',
 		'title' => 'Source',
@@ -83,15 +85,15 @@ class SourceMetaBox extends BaseMetaBox {
 		$page = get_post_meta( $post->ID, 'myplugin-book-isbn', true );
 		$url = get_post_meta( $post->ID, 'myplugin-book-author', true );
 
-		echo '<label for="myplugin-book-isbn">Source Page:</label>';
+		echo '<label for="myplugin-book-isbn">ISBN:</label>';
 		printf(
 			'<input name="myplugin-book-isbn" type="text" value="%s">',
 			esc_attr( $page )
 		);
 
-		echo '<label for="myplugin-book-author">Source URL:</label>';
+		echo '<label for="myplugin-book-author">Author:</label>';
 		printf(
-			'<input class="code" name="myplugin-book-author" type="url" value="%s">',
+			'<input class="code" name="myplugin-book-author" type="text" value="%s">',
 			esc_attr( $url )
 		);
 	}
@@ -109,7 +111,7 @@ add_action( 'plugins_loaded', function() {
 	$genre = new Taxonomy( 'genre' );
 
 	$book->add_taxonomy( $genre );
-	$book->add_meta_box( new SourceMetaBox );
+	$book->add_meta_box( new BookMetaBox );
 	$book->init();
 } );
 ```
