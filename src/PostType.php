@@ -21,7 +21,7 @@ class PostType {
 		$name_singular = trim( strtolower( $name_singular ) );
 
 		if ( is_null( $name_plural ) ) {
-			$name_plural = $name_singular . 's';
+			$name_plural = sprintf( '%ss', $name_singular );
 		}
 
 		$singular_capitalized = ucwords( $name_singular );
@@ -43,7 +43,10 @@ class PostType {
 			'view_item' => sprintf( 'View %s', $singular_capitalized ),
 			'search_items' => sprintf( 'Search %s', $plural_capitalized ),
 			'not_found' => sprintf( 'No %s found.', $name_singular ),
-			'not_found_in_trash' => sprintf( 'No %s found in Trash.', $name_singular ),
+			'not_found_in_trash' => sprintf(
+				'No %s found in Trash.',
+				$name_singular
+			),
 		];
 
 		$default_args = [
@@ -63,8 +66,8 @@ class PostType {
 
 		$this->args = wp_parse_args( $args, $default_args );
 		$this->nonce = [
-			'name' => 'metis_save_' . $slug . '_nonce',
-			'action' => 'metis_save_' . $slug,
+			'name' => '_mtpnonce',
+			'action' => sprintf( '%s\\%s', __CLASS__, $slug ),
 		];
 		$this->slug = $slug;
 	}
@@ -102,7 +105,10 @@ class PostType {
 		foreach ( $this->meta_boxes as $meta_box ) {
 			$meta_box->register_meta();
 
-			add_action( 'save_post_' . $this->slug, [ $meta_box, 'save' ] );
+			add_action(
+				sprintf( 'save_post_%s', $this->slug ),
+				[ $meta_box, 'save' ]
+			);
 		}
 	}
 

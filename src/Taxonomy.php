@@ -4,7 +4,7 @@ namespace SSNepenthe\Metis;
 
 class Taxonomy {
 	protected $args;
-	protected $object;
+	protected $object = null;
 	protected $slug;
 
 	public function __construct(
@@ -15,7 +15,7 @@ class Taxonomy {
 		$name_singular = trim( strtolower( $name_singular ) );
 
 		if ( is_null( $name_plural ) ) {
-			$name_plural = $name_singular . 's';
+			$name_plural = sprintf( '%ss', $name_singular );
 		}
 
 		$singular_capitalized = ucwords( $name_singular );
@@ -39,7 +39,10 @@ class Taxonomy {
 				'Separate %s with commas.',
 				$name_plural
 			),
-			'add_or_remove_items' => sprintf( 'Add or remove %s', $name_plural ),
+			'add_or_remove_items' => sprintf(
+				'Add or remove %s',
+				$name_plural
+			),
 			'choose_from_most_used' => sprintf(
 				'Choose from the most used %s',
 				$name_plural
@@ -62,6 +65,13 @@ class Taxonomy {
 	}
 
 	public function register_taxonomy() {
+		if ( is_null( $this->object ) ) {
+			throw new \RuntimeException( sprintf(
+				'You must set an object for taxonomy %s',
+				$this->slug
+			) );
+		}
+
 		register_taxonomy( $this->slug, $this->object, $this->args );
 	}
 
