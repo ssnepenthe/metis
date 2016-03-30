@@ -1,6 +1,6 @@
 {
     "name": "ssnepenthe/metis",
-    "description": "Easy custom post types, taxonomies and metaboxes in WordPress.",
+    "description": "A small framework for simplifying some common WordPress tasks.",
     "type": "library",
     "homepage": "https://github.com/ssnepenthe/metis",
     "license": "GPL-2.0",
