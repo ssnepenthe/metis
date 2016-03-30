@@ -7,13 +7,11 @@ class Taxonomy {
 	protected $object;
 	protected $slug;
 
-	public function __construct( $name_singular, array $args = [], $object = null, $name_plural = null ) {
-		if ( ! is_string( $name_singular ) ) {
-			throw new \InvalidArgumentException(
-				'Taxonomy class constructor expects $name of type: string, ' . gettype( $name_singular ) . ' given.'
-			);
-		}
-
+	public function __construct(
+		string $name_singular,
+		array $args = [],
+		string $name_plural = null
+	) {
 		$name_singular = trim( strtolower( $name_singular ) );
 
 		if ( is_null( $name_plural ) ) {
@@ -68,10 +66,12 @@ class Taxonomy {
 	}
 
 	public function set_object( $slug ) {
-		if ( ! is_string( $slug ) ) {
-			throw new \InvalidArgumentException(
-				'set_object expects $slug of type: string, ' . gettype( $slug ) . ' given.'
-			);
+		if ( ! is_string( $slug ) && ! is_array( $slug ) ) {
+			throw new \InvalidArgumentException( sprintf(
+				'%s expects $slug of type array|string, %s given.',
+				__METHOD__,
+				gettype( $slug )
+			) );
 		}
 
 		$this->object = $slug;

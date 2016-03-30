@@ -45,7 +45,7 @@ abstract class BaseMetaBox {
 		}
 	}
 
-	abstract public function render( $post );
+	abstract public function render( \WP_Post $post );
 
 	public function sanitize( $input ) {
 		if ( is_array( $input ) ) {
@@ -61,7 +61,7 @@ abstract class BaseMetaBox {
 		return '';
 	}
 
-	public function save( $post_id ) {
+	public function save( int $post_id ) {
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}
@@ -93,7 +93,7 @@ abstract class BaseMetaBox {
 			// Not sanitizing because it is hooked to $this->sanitize().
 			$input = filter_input( INPUT_POST, $meta_key );
 
-			if ( is_null( $input ) ) {
+			if ( ! $input ) {
 				continue;
 			}
 

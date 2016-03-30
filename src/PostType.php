@@ -13,13 +13,11 @@ class PostType {
 	protected $slug;
 	protected $taxonomies = [];
 
-	public function __construct( $name_singular, array $args = [], $name_plural = null ) {
-		if ( ! is_string( $name_singular ) ) {
-			throw new \InvalidArgumentException(
-				'PostType class constructor expects $name of type: string, ' . gettype( $name_singular ) . ' given.'
-			);
-		}
-
+	public function __construct(
+		string $name_singular,
+		array $args = [],
+		string $name_plural = null
+	) {
 		$name_singular = trim( strtolower( $name_singular ) );
 
 		if ( is_null( $name_plural ) ) {
@@ -108,7 +106,7 @@ class PostType {
 		}
 	}
 
-	public function nonce( $post ) {
+	public function nonce( \WP_Post $post ) {
 		if ( $this->slug !== $post->post_type ) {
 			return;
 		}
@@ -117,7 +115,7 @@ class PostType {
 		wp_nonce_field( $this->nonce['action'], $this->nonce['name'] );
 	}
 
-	public function meta_box_cb( $post ) {
+	public function meta_box_cb( \WP_Post $post ) {
 		if ( empty( $this->meta_boxes ) ) {
 			return;
 		}
