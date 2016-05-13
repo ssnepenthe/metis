@@ -127,7 +127,14 @@ class Toolbar {
 		exit;
 	}
 
-	public function get_node( string $id ) {
+	public function get_node( $id ) {
+		if ( ! is_string( $id ) ) {
+			throw new \InvalidArgumentException( sprintf(
+				'The id parameter is required to be string, was: %s',
+				gettype( $id )
+			) );
+		}
+
 		if ( isset( $this->nodes[ $id ] ) ) {
 			return $this->nodes[ $id ];
 		}
@@ -140,7 +147,14 @@ class Toolbar {
 		add_action( 'admin_init', [ $this, 'admin_init' ], 999 );
 	}
 
-	public function remove_node( string $id ) {
+	public function remove_node( $id ) {
+		if ( ! is_string( $id ) ) {
+			throw new \InvalidArgumentException( sprintf(
+				'The id parameter is required to be string, was: %s',
+				gettype( $id )
+			) );
+		}
+
 		if ( ! isset( $this->nodes[ $id ] ) ) {
 			return false;
 		}

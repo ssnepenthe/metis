@@ -61,7 +61,14 @@ abstract class BaseMetaBox {
 		return '';
 	}
 
-	public function save( int $post_id ) {
+	public function save( $post_id ) {
+		if ( ! is_int( $post_id ) ) {
+			throw new \InvalidArgumentException( sprintf(
+				'The post_id parameter is required to be int, was: %s',
+				gettype( $post_id )
+			) );
+		}
+
 		if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
 			return;
 		}

@@ -14,10 +14,24 @@ class PostType {
 	protected $taxonomies = [];
 
 	public function __construct(
-		string $name_singular,
+		$name_singular,
 		array $args = [],
-		string $name_plural = null
+		$name_plural = null
 	) {
+		if ( ! is_string( $name_singular ) ) {
+			throw new \InvalidArgumentException( sprintf(
+				'The name_singular parameter is required to be string, was: %s',
+				gettype( $name_singular )
+			) );
+		}
+
+		if ( ! is_string( $name_plural ) ) {
+			throw new \InvalidArgumentException( sprintf(
+				'The name_plural parameter is required to be string, was: %s',
+				gettype( $name_plural )
+			) );
+		}
+
 		$name_singular = trim( strtolower( $name_singular ) );
 
 		if ( is_null( $name_plural ) ) {
