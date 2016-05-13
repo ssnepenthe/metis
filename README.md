@@ -2,8 +2,6 @@
 A small framework for simplifying some common WordPress tasks.
 
 ## Usage
-Requires php >= 7.0.
-
 Metis can help you to quickly register content types with custom meta boxes and add custom menus to the admin bar.
 
 ### Content Types
