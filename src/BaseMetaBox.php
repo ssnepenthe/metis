@@ -9,7 +9,7 @@ abstract class BaseMetaBox {
 
 	public function __construct() {
 		if ( ! isset( $this->args['id'] ) || ! isset( $this->args['title'] ) ) {
-			throw new \InvalidArgumentException(
+			throw new \DomainException(
 				'Classes that inherit from BaseMetaBox must define an ID and title.'
 			);
 		}
@@ -110,8 +110,8 @@ abstract class BaseMetaBox {
 
 	public function set_nonce( array $nonce ) {
 		if ( ! isset( $nonce['name'] ) || ! isset( $nonce['action'] ) ) {
-			throw new \InvalidArgumentException(
-				'Nonce supplied to meta box classes must be an array containing a name and action.'
+			throw new \DomainException(
+				'Nonce supplied to meta box classes must include a name and action.'
 			);
 		}
 
