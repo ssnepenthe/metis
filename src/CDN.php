@@ -3,7 +3,7 @@
 namespace SSNepenthe\Metis;
 
 class CDN {
-	const CACHE_GROUP = 'metis';
+	const CACHE_GROUP = 'metis:cdn';
 
 	protected $args;
 	protected $pointer = 0;
