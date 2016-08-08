@@ -91,7 +91,7 @@ class CDN {
 	}
 
 	public function loader_src( $src ) {
-		if ( $this->aggressive ) {
+		if ( $this->args['aggressive'] ) {
 			return $src;
 		}
 
@@ -169,7 +169,7 @@ class CDN {
 	}
 
 	protected function increment_pointer() {
-		$this->pointer = ( count( $this->domains ) > $this->pointer + 1 ) ?
+		$this->pointer = ( count( $this->args['domains'] ) > $this->pointer + 1 ) ?
 			$this->pointer + 1 :
 			0;
 	}
