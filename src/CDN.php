@@ -49,7 +49,7 @@ class CDN {
 			 * Must be an array of element tagnames you would like to search
 			 * within for static assets.
 			 */
-			'elements' => apply_filters( 'metis.cdn.elements.default' [
+			'elements' => apply_filters( 'metis.cdn.elements.default', [
 				'img',
 				'link',
 				'meta',
