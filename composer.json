@@ -1,16 +1,17 @@
 {
-    "name": "ssnepenthe/metis",
-    "description": "A small framework for simplifying some common WordPress tasks.",
-    "type": "library",
-    "homepage": "https://github.com/ssnepenthe/metis",
-    "license": "GPL-2.0",
-    "require": {
-        "php": ">=5.4"
-    },
-    "require-dev": {
-        "psy/psysh": "^0.7"
-    },
-    "autoload": {
-        "psr-4": { "SSNepenthe\\Metis\\": "src/" }
-    }
+  "name": "ssnepenthe/metis",
+  "description": "A small framework for simplifying some common WordPress tasks.",
+  "type": "library",
+  "homepage": "https://github.com/ssnepenthe/metis",
+  "license": "GPL-2.0",
+  "require": {
+    "php": ">=5.4",
+    "ext-xml": "*"
+  },
+  "require-dev": {
+    "psy/psysh": "^0.7"
+  },
+  "autoload": {
+    "psr-4": { "SSNepenthe\\Metis\\": "src/" }
+  }
 }
