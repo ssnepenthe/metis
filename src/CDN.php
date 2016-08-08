@@ -99,9 +99,10 @@ class CDN {
 		$original = $src;
 
 		if ( ! $domain = $this->cache_get( $src ) ) {
+			$domain = $this->current_domain();
 			$from_cache = false;
 
-			$this->cache_set( $src, $this->current_domain() );
+			$this->cache_set( $src, $domain );
 		}
 
 		$replace = sprintf(
