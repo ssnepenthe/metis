@@ -72,7 +72,7 @@ class CDN {
 			] ),
 		];
 
-		$args = wp_parse_args( $args, $defaults );
+		$this->args = wp_parse_args( $args, $defaults );
 
 		$this->search = sprintf(
 			'/(https?\:(?:\\\\)?\/(?:\\\\)?\/)%s((?:\\\\)?\/[^\'"]*?)(\.(?:%s))/',
