@@ -27,7 +27,7 @@ class CDN {
 			 * If truthy we will attempt to modify all script, style, link and
 			 * img tags as well as a tags which are parents of img tags.
 			 */
-			'agressive' => apply_filters( 'metis.cdn.aggressive.default', true ),
+			'aggressive' => apply_filters( 'metis.cdn.aggressive.default', true ),
 
 			/**
 			 * Must be an array of domains from which you would like your static
