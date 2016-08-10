@@ -6,7 +6,8 @@ class CDN {
 	const CACHE_GROUP = 'metis:cdn';
 
 	protected $args;
-	protected $pointer = 0;
+	protected $elements;
+	protected $replace;
 	protected $search;
 
 	public function __construct( array $args = [] ) {
@@ -21,58 +22,52 @@ class CDN {
 
 		$defaults = [
 			/**
-			 * If falsy we will only modify script and stylesheet source
-			 * attributes via the *_loader_src hooks.
+			 * If falsy only URLs passed through the metis.cdn.url filter will
+			 * be modified.
 			 *
-			 * If truthy we will attempt to modify all script, style, link and
-			 * img tags as well as a tags which are parents of img tags.
+			 * If truthy the entire document will be searched for assets that
+			 * can be offloaded to the CDN domain.
 			 */
-			'aggressive' => apply_filters( 'metis.cdn.aggressive.default', true ),
+			'aggressive' => apply_filters(
+				'metis.cdn.aggressive.default',
+				true
+			),
 
 			/**
-			 * Must be an array of domains from which you would like your static
-			 * assets served.
-			 *
-			 * If more than one domain is provided, assets will first be split
-			 * by filetype and then each will be spread evenly across the
-			 * domains.
-			 *
-			 * Further, an attempt is made to consistently serve a given asset
-			 * from the same domain wherever it is used on the site, but this
-			 * does require a persistent object cache backend such as redis.
+			 * The domain from which you would like your static assets served.
 			 */
-			'domains' => apply_filters( 'metis.cdn.domains.default', [
+			'domain' => apply_filters(
+				'metis.cdn.domain.default',
 				sprintf( 'static.%s.%s', $domain, $tld )
-			] ),
-
-			/**
-			 * Must be an array of element tagnames you would like to search
-			 * within for static assets.
-			 */
-			'elements' => apply_filters( 'metis.cdn.elements.default', [
-				'img',
-				'link',
-				'meta',
-				'script',
-				'style',
-			] ),
+			),
 
 			/**
 			 * Must be an array of file extensions which will be fed to the
 			 * regex pattern. These will not be escaped so you can include
 			 * character classes, quantifiers, etc.
 			 */
-			'extensions' => apply_filters( 'metis.cdn.extensions.default', [
-				'css',
-				'gif',
-				'jpe?g',
-				'js',
-				'png',
-				'svg',
-			] ),
+			'extensions' => apply_filters(
+				'metis.cdn.extensions.default',
+				[ 'css', 'gif', 'ico', 'jpe?g', 'js', 'png', 'svg' ]
+			),
 		];
 
 		$this->args = wp_parse_args( $args, $defaults );
+
+		$this->assert_string( $this->args['domain'] );
+		$this->assert_array_of_strings( $this->args['extensions'] );
+
+		$this->elements = [
+			'img' => [ 'src', 'srcset' ],
+			'link' => [ 'href' ],
+			'meta' => [ 'content' ],
+			'script' => [ 'src' ],
+		];
+
+		$this->replace = sprintf(
+			'\1%s\2\3',
+			$this->args['domain']
+		);
 
 		$this->search = sprintf(
 			'/(https?\:(?:\\\\)?\/(?:\\\\)?\/)%s((?:\\\\)?\/[^\'"]*?)(\.(?:%s))/',
@@ -82,96 +77,125 @@ class CDN {
 	}
 
 	public function init() {
-		$this->assert_array_of_strings( $this->args['domains'] );
-		$this->assert_array_of_strings( $this->args['elements'] );
-		$this->assert_array_of_strings( $this->args['extensions'] );
+		add_action( 'template_redirect', [ $this, 'template_redirect' ] );
 
 		add_filter( 'script_loader_src', [ $this, 'loader_src' ] );
 		add_filter( 'style_loader_src', [ $this, 'loader_src' ] );
+		add_filter( 'metis.cdn.url', [ $this, 'loader_src' ] );
 	}
 
-	public function loader_src( $src ) {
+	public function loader_src( $url ) {
+		if ( ! $this->is_frontend_request() ) {
+			return $url;
+		}
+
 		if ( $this->args['aggressive'] ) {
-			return $src;
+			return $url;
 		}
 
-		$from_cache = true;
-		$original = $src;
+		$url = preg_replace( $this->search, $this->replace, $url );
 
-		if ( ! $domain = $this->cache_get( $src ) ) {
-			$domain = $this->current_domain();
-			$from_cache = false;
+		return $url;
+	}
 
-			$this->cache_set( $src, $domain );
+	public function template_redirect() {
+		if ( ! $this->is_frontend_request() ) {
+			return;
 		}
 
-		$replace = sprintf(
-			'\1%s\2\3',
-			$domain
-		);
-
-		$src = preg_replace( $this->search, $replace, $src );
-
-		if ( $src !== $original && ! $from_cache ) {
-			$this->increment_pointer();
+		if ( ! $this->args['aggressive'] ) {
+			return;
 		}
 
-		// WordPress core handles escaping this value before it is printed.
-		return $src;
+		ob_start( [ $this, 'ob_callback' ] );
+	}
+
+	protected function assert_string( $string ) {
+		if ( ! is_string( $string ) ) {
+			throw new \RuntimeException( sprintf(
+				'String required, %s given',
+				gettype( $string )
+			) );
+		}
 	}
 
 	protected function assert_array_of_strings( array $array ) {
 		if ( empty( $array ) ) {
-			// @todo
-			throw new \RuntimeException();
+			throw new \RuntimeException( 'Empty array not allowed' );
 		}
 
 		array_walk( $array, function( $value ) {
 			if ( ! is_string( $value ) ) {
-				// @todo
-				throw new \RuntimeException();
+				throw new \RuntimeException( sprintf(
+					'Array of strings required, found %s',
+					gettype( $value )
+				) );
 			}
 		} );
 	}
 
-	protected function cache_get( $source_url ) {
-		// Bypass cache completely if there is only one domain.
-		if ( 1 === count( $this->args['domains'] ) ) {
-			return $this->current_domain();
-		}
+	protected function is_frontend_request() {
+		global $pagenow;
 
-		$key = $this->get_cache_key( $source_url );
+		$is_login = 'wp-login.php' === $pagenow;
 
-		$domain = wp_cache_get( $key, self::CACHE_GROUP );
+		// @todo Might want to allow this to run on feeds...
+		$is_backend = is_feed() || is_robots() || is_trackback() ||
+			is_comment_feed() || is_admin() || $is_login;
 
-		if ( $domain && ! in_array( $domain, $this->args['domains'] ) ) {
-			wp_cache_delete( $key, self::CACHE_GROUP );
-
-			return false;
-		}
-
-		return $domain;
+		return ! $is_backend;
 	}
 
-	protected function cache_set( $source_url, $cdn_domain ) {
-		return wp_cache_set(
-			$this->get_cache_key( $source_url ),
-			$cdn_domain,
-			self::CACHE_GROUP
+	protected function ob_callback( $buffer ) {
+		// \DOMDocument doesn't like html5 elements...
+		$original_error_state = libxml_use_internal_errors( true );
+
+		$document = new \DOMDocument;
+		$document->formatOutput = true;
+		$document->loadHTML( $buffer );
+
+		$query = sprintf(
+			'.//%s',
+			implode( '|.//', array_keys( $this->elements ) )
 		);
+		$xpath = new \DOMXPath( $document );
+		$elements = $xpath->query( $query );
+
+		foreach ( $elements as $element ) {
+			$this->prepare_node( $element );
+		}
+
+		libxml_use_internal_errors( $original_error_state );
+
+		return $document->saveHTML();
 	}
 
-	protected function current_domain() {
-		return $this->args['domains'][ $this->pointer ];
-	}
+	protected function prepare_node( \DOMElement $element ) {
+		if ( ! isset( $this->elements[ $element->tagName ] ) ) {
+			return;
+		}
 
-	protected function get_cache_key( $source_url ) {
-		return hash( 'md5', $source_url );
-	}
+		foreach ( $this->elements[ $element->tagName ] as $attr ) {
+			if ( ! $element->hasAttribute( $attr ) ) {
+				continue;
+			}
 
-	protected function increment_pointer() {
-		$this->pointer = ( count( $this->args['domains'] ) > $this->pointer + 1 ) ?
-			$this->pointer + 1 :
-			0;
+			$element->setAttribute( $attr, preg_replace(
+				$this->search,
+				$this->replace,
+				$element->getAttribute( $attr )
+			) );
+		}
+
+		if (
+			'a' === $element->parentNode->tagName &&
+			$element->parentNode->hasAttribute( 'href' )
+		) {
+			$element->parentNode->setAttribute( 'href', preg_replace(
+				$this->search,
+				$this->replace,
+				$element->parentNode->getAttribute( 'href' );
+			) );
+		}
 	}
 }
