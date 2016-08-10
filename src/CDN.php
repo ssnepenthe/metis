@@ -1,21 +1,69 @@
 <?php
+/**
+ * Simple CDN class for WordPress.
+ *
+ * @package metis
+ */
 
 namespace SSNepenthe\Metis;
 
+/**
+ * This class handles automatically replacing static assets within img, link,
+ * meta and script elements.
+ *
+ * They are replaced using the 'static' subdomain of home_url().
+ *
+ * View the readme for more info.
+ */
 class CDN {
 	const CACHE_GROUP = 'metis:cdn';
 
+	/**
+	 * Configuration array.
+	 *
+	 * @var array
+	 */
 	protected $args;
+
+	/**
+	 * Array of elements to search and their respective attributes to modify.
+	 *
+	 * @var array
+	 */
 	protected $elements;
+
+	/**
+	 * Replacement string fed to preg_replace().
+	 *
+	 * @var string
+	 */
 	protected $replace;
+
+	/**
+	 * CDN regex pattern.
+	 *
+	 * @var string
+	 */
 	protected $search;
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param array $args Configuration array.
+	 *
+	 * @throws \RuntimeException If home_url() cannot be parsed properly.
+	 */
 	public function __construct( array $args = [] ) {
-		/**
-		 * @todo Sad attempt at domain parsing. This needs to be revisited
-		 *       because, at a minimum, this won't hold up against ccSLDs.
-		 */
-		$host = parse_url( home_url(), PHP_URL_HOST );
+		// Revisit - at a minimum this won't hold up against ccSLDs.
+		$host = wp_parse_url( home_url() );
+
+		if ( ! isset( $host['host'] ) ) {
+			// @todo
+			throw new \RuntimeException();
+		}
+
+		$host = $host['host'];
+
 		$host_parts = explode( '.', $host );
 		$tld = array_pop( $host_parts );
 		$domain = array_pop( $host_parts );
@@ -76,6 +124,9 @@ class CDN {
 		);
 	}
 
+	/**
+	 * Hooks the class functionality in to WordPress.
+	 */
 	public function init() {
 		add_action( 'template_redirect', [ $this, 'template_redirect' ] );
 
@@ -84,6 +135,13 @@ class CDN {
 		add_filter( 'metis.cdn.url', [ $this, 'loader_src' ] );
 	}
 
+	/**
+	 * Modify a given URL to point to the CDN domain.
+	 *
+	 * @param  string $url URL to modify.
+	 *
+	 * @return string
+	 */
 	public function loader_src( $url ) {
 		if ( ! $this->is_frontend_request() ) {
 			return $url;
@@ -93,11 +151,16 @@ class CDN {
 			return $url;
 		}
 
+		$this->assert_string( $url );
+
 		$url = preg_replace( $this->search, $this->replace, $url );
 
 		return $url;
 	}
 
+	/**
+	 * Enable output buffering when instantiated with aggressive == true.
+	 */
 	public function template_redirect() {
 		if ( ! $this->is_frontend_request() ) {
 			return;
@@ -110,6 +173,13 @@ class CDN {
 		ob_start( [ $this, 'ob_callback' ] );
 	}
 
+	/**
+	 * Assert that a given variable is a string.
+	 *
+	 * @param  mixed $string Value to check.
+	 *
+	 * @throws \RuntimeException If the given value is not a string.
+	 */
 	protected function assert_string( $string ) {
 		if ( ! is_string( $string ) ) {
 			throw new \RuntimeException( sprintf(
@@ -119,6 +189,14 @@ class CDN {
 		}
 	}
 
+	/**
+	 * Assert that a given array is not empty and contains only strings.
+	 *
+	 * @param  array $array Array to check.
+	 *
+	 * @throws \RuntimeException If an empty array is provided.
+	 * @throws \RuntimeException If any value in the array is not a string.
+	 */
 	protected function assert_array_of_strings( array $array ) {
 		if ( empty( $array ) ) {
 			throw new \RuntimeException( 'Empty array not allowed' );
@@ -134,6 +212,11 @@ class CDN {
 		} );
 	}
 
+	/**
+	 * Determine whether the current request is for a frontend (i.e. themed) page.
+	 *
+	 * @return boolean [description]
+	 */
 	protected function is_frontend_request() {
 		global $pagenow;
 
@@ -146,6 +229,13 @@ class CDN {
 		return ! $is_backend;
 	}
 
+	/**
+	 * Output buffering callback used to search document for assets to rewrite.
+	 *
+	 * @param  string $buffer Buffer from output buffering.
+	 *
+	 * @return string
+	 */
 	protected function ob_callback( $buffer ) {
 		// \DOMDocument doesn't like html5 elements...
 		$original_error_state = libxml_use_internal_errors( true );
@@ -170,6 +260,12 @@ class CDN {
 		return $document->saveHTML();
 	}
 
+	/**
+	 * Make the necessary modification to a DOM Node so that any assets used are
+	 * rewritten to the CDN URL.
+	 *
+	 * @param  \DOMElement $element DOM Node to modify.
+	 */
 	protected function prepare_node( \DOMElement $element ) {
 		if ( ! isset( $this->elements[ $element->tagName ] ) ) {
 			return;
@@ -194,7 +290,7 @@ class CDN {
 			$element->parentNode->setAttribute( 'href', preg_replace(
 				$this->search,
 				$this->replace,
-				$element->parentNode->getAttribute( 'href' );
+				$element->parentNode->getAttribute( 'href' )
 			) );
 		}
 	}
