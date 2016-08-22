@@ -7,21 +7,23 @@ namespace SSNepenthe\Metis;
  * user must be autheticated and have authorization in order to continue.
  */
 class Auth {
+	/**
+	 * @hook
+	 */
 	public function init() {
 		add_rewrite_rule(
 			'^login/?',
 			'index.php?cpp_login=true',
 			'top'
 		);
-
-		add_filter( 'query_vars', [ $this, 'query_vars' ] );
-		add_filter( 'template_include', [ $this, 'authorization_template_include' ] );
-		add_filter( 'template_include', [ $this, 'login_template_include' ] );
-		add_filter( 'template_redirect', [ $this, 'login_template_redirect' ] );
 	}
 
 	/**
 	 * Use the 403.php template when the pageview is forbidden.
+	 *
+	 * @hook
+	 *
+	 * @tag template_include
 	 */
 	public function authorization_template_include( $template ) {
 		if ( ! apply_filters( 'metis.auth.is_forbidden', false ) ) {
@@ -31,6 +33,9 @@ class Auth {
 		return get_query_template( '403' );
 	}
 
+	/**
+	 * @hook
+	 */
 	public function query_vars( array $query_vars ) {
 		if ( false === array_search( 'cpp_login', $query_vars ) ) {
 			$query_vars[] = 'cpp_login';
@@ -41,6 +46,10 @@ class Auth {
 
 	/**
 	 * Use the login.php template for the 'login' endpoint.
+	 *
+	 * @hook
+	 *
+	 * @tag template_include
 	 */
 	public function login_template_include( $template ) {
 		global $wp_query;
@@ -54,6 +63,10 @@ class Auth {
 
 	/**
 	 * Redirect user to the 'login' endpoint when authentication is required.
+	 *
+	 * @hook
+	 *
+	 * @tag template_redirect
 	 */
 	public function login_template_redirect() {
 		if ( is_user_logged_in() ) {
