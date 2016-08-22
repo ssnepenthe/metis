@@ -2,6 +2,11 @@
 
 namespace SSNepenthe\Metis;
 
+/**
+ * Inspired by Scribu.
+ *
+ * @link http://scribu.net/wordpress/reflection-on-filters.html
+ */
 class Loader {
 	public static function attach( $object ) {
 		if ( ! is_object( $object ) ) {
