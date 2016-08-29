@@ -4,23 +4,12 @@ namespace SSNepenthe\Metis;
 
 /**
  * This class provides easy-to-use hooks for managing conditions under which a
- * user must be autheticated and have authorization in order to continue.
+ * user must be authenticated and have authorization in order to continue.
+ *
+ * It also lays the foundation for frontend login.
  */
 class Auth {
 	/**
-	 * @hook
-	 */
-	public function init() {
-		add_rewrite_rule(
-			'^login/?',
-			'index.php?cpp_login=true',
-			'top'
-		);
-	}
-
-	/**
-	 * Use the 403.php template when the pageview is forbidden.
-	 *
 	 * @hook
 	 *
 	 * @tag template_include
@@ -36,25 +25,59 @@ class Auth {
 	/**
 	 * @hook
 	 */
-	public function query_vars( array $query_vars ) {
-		if ( false === array_search( 'cpp_login', $query_vars ) ) {
-			$query_vars[] = 'cpp_login';
+	public function document_title_parts( array $title ) {
+		if ( ! $this->is_login() ) {
+			return $title;
 		}
 
-		return $query_vars;
+		$title['title'] = 'Log In';
+
+		return $title;
 	}
 
 	/**
-	 * Use the login.php template for the 'login' endpoint.
+	 * @hook
+	 */
+	public function init() {
+		add_rewrite_rule(
+			'^login/?$',
+			'index.php?metis_auth=login',
+			'top'
+		);
+
+		// Remove built-in admin redirects.
+		remove_action(
+			'template_redirect',
+			'wp_redirect_admin_locations',
+			1000
+		);
+	}
+
+	/**
+	 * @hook
 	 *
+	 * @tag template_redirect
+	 */
+	public function logged_in_template_redirect() {
+		if ( ! $this->is_login() ) {
+			return;
+		}
+
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
+		wp_safe_redirect( home_url() );
+		die;
+	}
+
+	/**
 	 * @hook
 	 *
 	 * @tag template_include
 	 */
 	public function login_template_include( $template ) {
-		global $wp_query;
-
-		if ( ! $wp_query->get( 'cpp_login' ) ) {
+		if ( ! $this->is_login() ) {
 			return $template;
 		}
 
@@ -62,8 +85,6 @@ class Auth {
 	}
 
 	/**
-	 * Redirect user to the 'login' endpoint when authentication is required.
-	 *
 	 * @hook
 	 *
 	 * @tag template_redirect
@@ -77,23 +98,76 @@ class Auth {
 			return;
 		}
 
-		$redirect_arg = '';
+		// @todo Filterable fallback path?
+		$redirect_path = '';
+		$request_uri = '';
 
-		if (
-			array_key_exists( 'REQUEST_URI', $_SERVER ) &&
-			! empty( $_SERVER['REQUEST_URI'] ) &&
-			$url = filter_var( $_SERVER['REQUEST_URI'], FILTER_SANITIZE_URL )
-		) {
-			$redirect_arg = $url;
+		if ( isset( $_SERVER['REQUEST_URI'] ) ) {
+			$request_uri = filter_var(
+				$_SERVER['REQUEST_URI'],
+				FILTER_SANITIZE_URL
+			);
+		}
+
+		if ( $request_uri && '/' !== $request_uri ) {
+			$redirect_path = add_query_arg(
+				'redirect_to',
+				false,
+				$request_uri
+			);
 		}
 
 		$redirect_url = add_query_arg(
-			'redirect_to',
-			urlencode( $redirect_arg ),
+			[ 'redirect_to' => urlencode( home_url( $redirect_path ) ) ],
 			home_url( 'login/' )
 		);
 
 		wp_safe_redirect( $redirect_url );
 		die;
+	}
+
+	/**
+	 * @hook
+	 */
+	public function parse_query( \WP_Query $query ) {
+		$query->is_metis_login = false;
+
+		if ( ! isset( $query->query_vars['metis_auth'] ) ) {
+			return;
+		}
+
+		$query->is_home = false;
+
+		if ( 'login' === $query->query_vars['metis_auth'] ) {
+			$query->is_metis_login = true;
+		}
+	}
+
+	/**
+	 * @hook
+	 */
+	public function pre_handle_404( $short_circuit, \WP_Query $query ) {
+		if ( ! $query->is_metis_login ) {
+			return $short_circuit;
+		}
+
+		return true;
+	}
+
+	/**
+	 * @hook
+	 */
+	public function query_vars( array $query_vars ) {
+		return array_merge( $query_vars, [ 'metis_auth' ] );
+	}
+
+	protected function is_login() {
+		global $wp_query;
+
+		if ( $wp_query->is_metis_login ) {
+			return true;
+		}
+
+		return false;
 	}
 }
