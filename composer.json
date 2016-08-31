@@ -12,7 +12,6 @@
     "psy/psysh": "^0.7"
   },
   "autoload": {
-    "files": ["inc/functions.php"],
     "psr-4": { "SSNepenthe\\Metis\\": "src/" }
   }
 }
