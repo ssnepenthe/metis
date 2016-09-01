@@ -10,7 +10,7 @@ With Metis you can very quickly and easily:
 * Add custom menus to the admin bar
 
 ### Authentication/Authorization
-To begin, create the `403.php` and `login.php` files in your theme directory. `403.php` should display a "forbidden" message indicating that the user is trying to access a page that they are not allowed to access. `login.php` should contain a login form keeping in mind that `$_GET['redirect_to']` may or may not be set, and if it is, will contain a path relative to your home URL.
+To begin, create a `403.php` files in your theme directory which should display a "forbidden" message indicating that the user is trying to access a page that they are not allowed to access.
 
 Then make sure to create an instance of `SSNepenthe\Metis\Auth` and hook it in to WordPress.
 
@@ -24,7 +24,7 @@ add_action( 'plugins_loaded', function() {
 Finally, use the `metis.auth.is_forbidden` and `metis.auth.login_required` hooks to configure.
 
 ```php
-// Return true to prevent the user from viewing this page, false to proceed as normal.
+// Return true to prevent the user from viewing this page (loading `403.php` instead), false to proceed as normal.
 add_filter( 'metis.auth.is_forbidden', function( $is_forbidden ) {
     if ( ! is_singular( 'some_custom_post_type' ) ) {
         return $is_forbidden
@@ -79,7 +79,17 @@ By default, this is only scripts and stylesheets enqueued through the WordPress 
 
 ### WordPress hooks via docblocks
 
-By adding the `@hook` tag to the docblock of a public method it will automatically be attached to a hook with the same name as the method. Default priority is 10 and number of parameters is automatically determined from the method definition.
+By adding the `@hook` tag to the docblock of a public method it can automatically be attached to a hook with the same name as the method. Default priority is 10 and number of parameters is automatically determined from the method definition.
+
+To use the loader, simply call `SSNepenthe\Metis\Loader::attach()` and pass in an instance of whatever class needs to be hooked in to WordPress.
+
+```php
+add_action( 'plugins_loaded', function() {
+    SSNepenthe\Metis\Loader::attach( new SomeAwesomeClass );
+} );
+```
+
+And then make sure class methods are appropriately flagged.
 
 ```php
 class SomeAwesomeClass {
@@ -151,14 +161,6 @@ class SomeAwesomeClass {
         // ...
     }
 }
-```
-
-To use the loader, simply call `SSNepenthe\Metis\Loader::attach()` and pass in an instance of whatever class needs to be hooked in to WordPress.
-
-```php
-add_action( 'plugins_loaded', function() {
-    SSNepenthe\Metis\Loader::attach( new SomeAwesomeClass );
-} );
 ```
 
 ### Admin Bar Menu
