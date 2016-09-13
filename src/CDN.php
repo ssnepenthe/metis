@@ -16,8 +16,6 @@ namespace SSNepenthe\Metis;
  * View the readme for more info.
  */
 class CDN {
-	const CACHE_GROUP = 'metis:cdn';
-
 	/**
 	 * Configuration array.
 	 *
@@ -125,22 +123,17 @@ class CDN {
 	}
 
 	/**
-	 * Hooks the class functionality in to WordPress.
-	 */
-	public function init() {
-		add_action( 'template_redirect', [ $this, 'template_redirect' ] );
-
-		add_filter( 'script_loader_src', [ $this, 'loader_src' ] );
-		add_filter( 'style_loader_src', [ $this, 'loader_src' ] );
-		add_filter( 'metis.cdn.url', [ $this, 'loader_src' ] );
-	}
-
-	/**
 	 * Modify a given URL to point to the CDN domain.
+	 *
+	 * @hook
 	 *
 	 * @param  string $url URL to modify.
 	 *
 	 * @return string
+	 *
+	 * @tag script_loader_src
+	 * @tag style_loader_src
+	 * @tag metis.cdn.url
 	 */
 	public function loader_src( $url ) {
 		if ( ! $this->is_frontend_request() ) {
@@ -160,6 +153,8 @@ class CDN {
 
 	/**
 	 * Enable output buffering when instantiated with aggressive == true.
+	 *
+	 * @hook
 	 */
 	public function template_redirect() {
 		if ( ! $this->is_frontend_request() ) {

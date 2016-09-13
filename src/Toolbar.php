@@ -69,6 +69,11 @@ class Toolbar {
 		}
 	}
 
+	/**
+	 * @hook
+	 *
+	 * @priority 999
+	 */
 	public function admin_bar_menu( \WP_Admin_Bar $wp_admin_bar ) {
 		if ( empty( $this->nodes ) ) {
 			return;
@@ -81,6 +86,11 @@ class Toolbar {
 		}
 	}
 
+	/**
+	 * @hook
+	 *
+	 * @priority 999
+	 */
 	public function admin_init() {
 		if ( empty( $this->nodes ) ) {
 			return;
@@ -140,11 +150,6 @@ class Toolbar {
 		}
 
 		return null;
-	}
-
-	public function init() {
-		add_action( 'admin_bar_menu', [ $this, 'admin_bar_menu' ], 999 );
-		add_action( 'admin_init', [ $this, 'admin_init' ], 999 );
 	}
 
 	public function remove_node( $id ) {
