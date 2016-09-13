@@ -4,19 +4,135 @@ A small framework for simplifying some WordPress tasks.
 ## Usage
 With Metis you can very quickly and easily:
 
+* Hook an object in to WordPress and add shortcodes using method docblocks
 * Configure sections of your site to require authentication or authorization
 * Serve static assets from a CDN
-* Hook an object in to WordPress using method docblocks
 * Add custom menus to the admin bar
 
+### WordPress hooks and shortcodes via docblocks
+
+To use the loader, simply call `SSNepenthe\Metis\Loader::attach()` and pass in an instance of whatever class needs to be hooked in to WordPress.
+
+```php
+add_action( 'plugins_loaded', function() {
+    SSNepenthe\Metis\Loader::attach( new SomeAwesomeClass );
+} );
+```
+
+By adding the `@hook` tag to the docblock of a public method it can automatically be attached to a hook with the same name as the method. Default priority is 10 and number of parameters is automatically determined from the method definition.
+
+```php
+class SomeAwesomeClass {
+    /**
+     * Equivalent of add_action( 'init', [ $this, 'init' ], 10, 0 );
+     *
+     * @hook
+     */
+    public function init() {
+        // ...
+    }
+}
+```
+
+You can adjust the priority via the `@priority` tag.
+
+```php
+class SomeAwesomeClass {
+    /**
+     * Equivalent of add_action( 'init', [ $this, 'init' ], 5, 0 );
+     *
+     * @hook
+     *
+     * @priority 5
+     */
+    public function init() {
+        // ...
+    }
+}
+```
+
+If you would like to use a method name that does not or cannot match the hook name, you may define the hook using the `@tag` tag.
+
+```php
+class SomeAwesomeClass {
+    /**
+     * Equivalent of add_action( 'init', [ $this, 'some_method' ], 10, 0 );
+     *
+     * @hook
+     *
+     * @tag init
+     */
+    public function some_method() {
+        // ...
+    }
+}
+```
+
+And lastly, you can define multiple hooks and multiple priorities and each possible combination will be used.
+
+```php
+class SomeAwesomeClass {
+    /**
+     * Equivalent of:
+     *
+     * add_action( 'plugins_loaded', [ $this, 'some_method' ], 5, 0 );
+     * add_action( 'plugins_loaded', [ $this, 'some_method' ], 15, 0 );
+     * add_action( 'init', [ $this, 'some_method' ], 5, 0 );
+     * add_action( 'init', [ $this, 'some_method' ], 15, 0 );
+     *
+     * @hook
+     *
+     * @tag plugins_loaded
+     * @tag init
+     *
+     * @priority 5
+     * @priority 15
+     */
+    public function some_method() {
+        // ...
+    }
+}
+```
+
+If you add the `@shortcode` tag to the docblock of a shortcode handler method, `add_shortcode` will be called for you automatically.
+
+```php
+class SomeAwesomeShortcode {
+    /**
+     * Equivalent of add_shortcode( 'map', [ $this, 'map' ] ).
+     *
+     * @shortcode
+     */
+    public function map( $atts ) {
+        // Generate and return map output.
+    }
+}
+```
+
+Modify the shrotcode tag using the `@tag` tag.
+
+```php
+class SomeAwesomeShortcode {
+    /**
+     * Equivalent of add_shortcode( 'map', [ $this, 'shortcode_handler' ] ).
+     *
+     * @shortcode
+     *
+     * @tag map
+     */
+    public function shortcode_handler( $atts ) {
+        // Generate and return map output.
+    }
+}
+```
+
 ### Authentication/Authorization
-To begin, create a `403.php` files in your theme directory which should display a "forbidden" message indicating that the user is trying to access a page that they are not allowed to access.
+To begin, create a `403.php` file in your theme directory which should display a "forbidden" message indicating that the user is trying to access a page that they are not allowed to access.
 
 Then make sure to create an instance of `SSNepenthe\Metis\Auth` and hook it in to WordPress.
 
 ```php
 add_action( 'plugins_loaded', function() {
-    // Learn about the Loader class further down in this readme.
     SSNepenthe\Metis\Loader::attach( new SSNepenthe\Metis\Auth );
 } );
 ```
@@ -61,7 +177,8 @@ add_action( 'init', function() {
         'domain' => 'cdn.mysite.com', // default would be 'static.mysite.com'
         'extensions' => [ 'css', 'js' ], // default also includes gif, ico, jpe?g, png and svg
     ] );
-    $cdn->init();
+
+    SSNepenthe\Metis\Loader::attach( $cdn );
 } );
 ```
 
@@ -76,92 +193,6 @@ metis.cdn.extensions.default
 When `$args['aggressive']` is truthy, the full document will be searched for assets to rewrite. When falsy, only strings passed through the `metis.cdn.url` filter will be modified.
 
 By default, this is only scripts and stylesheets enqueued through the WordPress core APIs, but you can manually filter URLs as well (e.g. `apply_filters( 'metis.cdn.url', 'http://mysite.com/some/file/to/modify.jpg' );` ).
-
-### WordPress hooks via docblocks
-
-By adding the `@hook` tag to the docblock of a public method it can automatically be attached to a hook with the same name as the method. Default priority is 10 and number of parameters is automatically determined from the method definition.
-
-To use the loader, simply call `SSNepenthe\Metis\Loader::attach()` and pass in an instance of whatever class needs to be hooked in to WordPress.
-
-```php
-add_action( 'plugins_loaded', function() {
-    SSNepenthe\Metis\Loader::attach( new SomeAwesomeClass );
-} );
-```
-
-And then make sure class methods are appropriately flagged.
-
-```php
-class SomeAwesomeClass {
-    /**
-     * Equivalent of add_action( 'init', [ $this, 'init' ], 10, 0 );
-     *
-     * @hook
-     */
-    public function init() {
-        // ...
-    }
-}
-```
-
-You can adjust the priority via the `@priority` tag.
-
-```php
-class SomeAwesomeClass {
-    /**
-     * Equivalent of add_action( 'init', [ $this, 'init' ], 5, 0 );
-     *
-     * @hook
-     *
-     * @priority 5
-     */
-    public function init() {
-        // ...
-    }
-}
-```
-
-If you would like to use a method name that doesn't match the hook name, you can define the hook name with the `@tag` tag.
-
-```php
-class SomeAwesomeClass {
-    /**
-     * Equivalent of add_action( 'init', [ $this, 'some_method' ], 10, 0 );
-     *
-     * @hook
-     *
-     * @tag init
-     */
-    public function some_method() {
-        // ...
-    }
-}
-```
-
-And lastly, you can define multiple hooks and multiple priorities and each possible combination will be used.
-
-```php
-class SomeAwesomeClass {
-    /**
-     * Equivalent of:
-     * add_action( 'plugins_loaded', [ $this, 'some_method' ], 5, 0 );
-     * add_action( 'plugins_loaded', [ $this, 'some_method' ], 15, 0 );
-     * add_action( 'init', [ $this, 'some_method' ], 5, 0 );
-     * add_action( 'init', [ $this, 'some_method' ], 15, 0 );
-     *
-     * @hook
-     *
-     * @tag plugins_loaded
-     * @tag init
-     *
-     * @priority 5
-     * @priority 15
-     */
-    public function some_method() {
-        // ...
-    }
-}
-```
 
 ### Admin Bar Menu
 ```php
@@ -189,7 +220,7 @@ add_action( 'init', function() {
         ],
     ] );
 
-    $toolbar->init();
+    SSNepenthe\Metis\Loader::attach( $toolbar );
 } );
 ```
 
