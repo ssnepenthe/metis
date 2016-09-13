@@ -26,14 +26,55 @@ class Loader {
 				continue;
 			}
 
-			if ( false === strpos( $method->getDocComment(), '@hook' ) ) {
-				continue;
+			static::do_hooks( $object, $method );
+
+			static::do_shortcodes( $object, $method );
+		}
+	}
+
+	protected static function do_hooks( $object, \ReflectionMethod $method ) {
+		if ( false === strpos( $method->getDocComment(), '@hook' ) ) {
+			return;
+		}
+
+		foreach ( static::get_hooks( $method ) as $hook ) {
+			if ( preg_match( '/%%(.+)%%/', $hook['tag'], $match ) ) {
+				$hook['tag'] = str_replace(
+					'%%' . $match[1] . '%%',
+					$object->{$match[1]},
+					$hook['tag']
+				);
 			}
 
-			$hooks = static::get_hooks( $method );
-
-			static::do_hooks( $object, $method, $hooks );
+			// Add_action is an alias of add_filter.
+			add_filter(
+				$hook['tag'],
+				[ $object, $method->name ],
+				$hook['priority'],
+				$method->getNumberOfParameters()
+			);
 		}
+	}
+
+	protected static function do_shortcodes(
+		$object,
+		\ReflectionMethod $method
+	) {
+		if ( false === strpos( $method->getDocComment(), '@shortcode' ) ) {
+			return;
+		}
+
+		$tag = $method->name;
+
+		if ( preg_match(
+			'/@tag\s+(.+)/',
+			$method->getDocComment(),
+			$matches
+		) ) {
+			$tag = $matches[1];
+		}
+
+		add_shortcode( $tag, [ $object, $method->name ] );
 	}
 
 	protected static function get_hooks( \ReflectionMethod $method ) {
@@ -75,29 +116,5 @@ class Loader {
 		}
 
 		return $hooks;
-	}
-
-	protected static function do_hooks(
-		$object,
-		\ReflectionMethod $method,
-		array $hooks
-	) {
-		foreach ( $hooks as $hook ) {
-			if ( preg_match( '/%%(.+)%%/', $hook['tag'], $match ) ) {
-				$hook['tag'] = str_replace(
-					'%%' . $match[1] . '%%',
-					$object->{$match[1]},
-					$hook['tag']
-				);
-			}
-
-			// Add_action is an alias of add_filter.
-			add_filter(
-				$hook['tag'],
-				[ $object, $method->name ],
-				$hook['priority'],
-				$method->getNumberOfParameters()
-			);
-		}
 	}
 }
