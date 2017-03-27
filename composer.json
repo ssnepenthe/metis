@@ -10,7 +10,7 @@
     "pimple/pimple": "^3.0"
   },
   "require-dev": {
-    "psy/psysh": "^0.7"
+    "psy/psysh": "^0.8"
   },
   "autoload": {
     "classmap": ["src/"]
