@@ -26,9 +26,9 @@ class Container extends IlluminateContainer {
 			return;
 		}
 
-		add_action( 'muplugins_loaded', [ $this, 'boot' ], 99 );
-		add_action( 'plugins_loaded', [ $this, 'boot' ], 99 );
-		add_action( 'after_setup_theme', [ $this, 'boot' ], 99 );
+		add_action( 'muplugins_loaded', [ $this, 'boot' ], 0 );
+		add_action( 'plugins_loaded', [ $this, 'boot' ], 0 );
+		add_action( 'after_setup_theme', [ $this, 'boot' ], 0 );
 
 		$this->initialized = true;
 	}
