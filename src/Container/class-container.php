@@ -47,20 +47,11 @@ class Container extends IlluminateContainer {
 		}
 
 		$this->booted_providers[ $name ] = false;
-
-		if ( $this->finished_booting() ) {
-			$this->boot_provider( $provider );
-		}
 	}
 
 	protected function boot_provider( Bootable_Service_Provider $provider ) {
 		$provider->boot();
 		$this->booted_providers[ get_class( $provider ) ] = true;
-	}
-
-	protected function finished_booting() {
-		return did_action( 'after_setup_theme' )
-			&& 'after_setup_theme' !== current_action();
 	}
 
 	protected function register_provider( Service_Provider $provider ) {
