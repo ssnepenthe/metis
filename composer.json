@@ -5,16 +5,16 @@
   "homepage": "https://github.com/ssnepenthe/metis",
   "license": "GPL-2.0",
   "require": {
-    "php": ">=5.4",
-    "ext-xml": "*",
+    "php": ">=7.0",
     "illuminate/container": "^5.4"
-  },
-  "require-dev": {
-    "10up/wp_mock": "dev-dev",
-    "phpunit/phpunit": "^5.7"
   },
   "autoload": {
     "classmap": ["src/"],
     "files": ["inc/functions.php"]
+  },
+  "scripts": {
+    "integration": "phpunit --bootstrap=tests/integration/bootstrap.php --color=always --testsuite=integration",
+    "unit": "phpunit --bootstrap=tests/unit/bootstrap.php --color=always --testsuite=unit",
+    "test": ["@integration", "@unit"]
   }
 }
