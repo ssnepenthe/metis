@@ -1,0 +1,16 @@
+<phpunit
+	backupGlobals="false"
+	colors="true"
+	convertErrorsToExceptions="true"
+	convertNoticesToExceptions="true"
+	convertWarningsToExceptions="true"
+	>
+	<testsuites>
+		<testsuite name="integration">
+			<directory prefix="test-" suffix=".php">./tests/integration/</directory>
+		</testsuite>
+        <testsuite name="unit">
+            <directory prefix="test-" suffix=".php">./tests/unit/</directory>
+        </testsuite>
+	</testsuites>
+</phpunit>
