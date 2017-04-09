@@ -33,7 +33,6 @@ class Filesystem_Provider implements Service_Provider_Interface {
 		$this->container->bind( 'wp.filesystem', function() {
 			global $wp_filesystem;
 
-			// @todo ???
 			if ( ! function_exists( 'WP_Filesystem' ) ) {
 				require_once ABSPATH . '/wp-admin/includes/file.php';
 			}
