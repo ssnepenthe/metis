@@ -1,6 +1,6 @@
 {
   "name": "ssnepenthe/metis",
-  "description": "A small framework for simplifying some WordPress tasks.",
+  "description": "Just some tools for simplifying some WordPress development tasks.",
   "type": "library",
   "homepage": "https://github.com/ssnepenthe/metis",
   "license": "GPL-2.0",

@@ -1,2 +1,2 @@
 # metis
-A small framework for simplifying some WordPress tasks.
+Just some tools for simplifying some WordPress development tasks.
