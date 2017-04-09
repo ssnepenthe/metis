@@ -45,4 +45,5 @@ before_script:
 
 script:
   - phpcs --standard=phpcs.ruleset.xml $(find . -name '*.php')
-  - composer test
+  - phpunit --bootstrap=tests/unit/bootstrap.php --testsuite=unit
+  - phpunit --bootstrap=tests/integration/bootstrap.php --testsuite=integration
