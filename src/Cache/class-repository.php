@@ -5,7 +5,6 @@ namespace Metis\Cache;
 use Closure;
 
 // @todo Repository interface?
-
 class Repository {
 	protected $store;
 

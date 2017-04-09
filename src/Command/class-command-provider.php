@@ -10,7 +10,6 @@ use Metis\Container\Container_Aware_Trait;
 use Metis\Container\Bootable_Service_Provider_Interface;
 
 // @todo Warm page cache command?
-
 class Command_Provider implements Bootable_Service_Provider_Interface {
 	use Container_Aware_Trait;
 

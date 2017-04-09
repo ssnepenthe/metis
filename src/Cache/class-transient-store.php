@@ -5,7 +5,6 @@ namespace Metis\Cache;
 use wpdb;
 
 // @todo How to handle *_site_transient() functions?
-
 class Transient_Store extends Abstract_Store {
 	protected $db;
 

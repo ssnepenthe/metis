@@ -6,7 +6,6 @@ use WP_Object_Cache;
 
 // @todo Is it appropriate to use prefix as group like this?
 // @todo Look into intended use of global cache groups.
-
 class Object_Cache_Store extends Abstract_Store {
 	protected $cache;
 

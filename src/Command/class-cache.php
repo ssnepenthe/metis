@@ -262,7 +262,7 @@ class Cache extends WP_CLI_Command {
 		$success = $repository->put( $key, $value, absint( $expiration ) );
 
 		if ( $success ) {
-			WP_CLI::success( "Cache entry [{$label}] set to [{$value}]");
+			WP_CLI::success( "Cache entry [{$label}] set to [{$value}]" );
 		} else {
 			if ( $value === $repository->get( $key ) ) {
 				WP_CLI::warning(
