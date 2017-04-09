@@ -1,4 +1,9 @@
 <?php
+/**
+ * Cache command class.
+ *
+ * @package metis
+ */
 
 namespace Metis\Command;
 
@@ -8,10 +13,22 @@ use Metis\Cache\Factory;
 
 /**
  * Advanced object cache management.
+ *
+ * @todo Consider adding increment/decrement commands.
  */
 class Cache extends WP_CLI_Command {
+	/**
+	 * Cache factory instance.
+	 *
+	 * @var Factory
+	 */
 	protected $cache;
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param Factory $cache Cache factory instance.
+	 */
 	public function __construct( Factory $cache ) {
 		$this->cache = $cache;
 	}
@@ -36,6 +53,9 @@ class Cache extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:cache add some_key "some value" 600
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function add( array $args, array $assoc_args ) {
 		$this->non_persistent_warning();
@@ -57,8 +77,6 @@ class Cache extends WP_CLI_Command {
 		}
 	}
 
-	public function decrement() {}
-
 	/**
 	 * Set a non-expiring cache value.
 	 *
@@ -76,6 +94,9 @@ class Cache extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:cache forever some_key "some value"
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function forever( array $args, array $assoc_args ) {
 		$this->non_persistent_warning();
@@ -106,6 +127,9 @@ class Cache extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:cache forget some_key
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function forget( array $args, array $assoc_args ) {
 		$this->non_persistent_warning();
@@ -141,6 +165,9 @@ class Cache extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:cache flush
+	 *
+	 * @param array $_          Unusued positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function flush( array $_, array $assoc_args ) {
 		$this->non_persistent_warning();
@@ -182,6 +209,9 @@ class Cache extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:cache get some_key
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function get( array $args, array $assoc_args ) {
 		$this->non_persistent_warning();
@@ -213,6 +243,9 @@ class Cache extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:cache has some_key
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function has( array $args, array $assoc_args ) {
 		$this->non_persistent_warning();
@@ -228,8 +261,6 @@ class Cache extends WP_CLI_Command {
 			WP_CLI::warning( "Cache entry [{$label}] is not set" );
 		}
 	}
-
-	public function increment() {}
 
 	/**
 	 * Set a cache value.
@@ -251,6 +282,9 @@ class Cache extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:cache put some_key "some value" 600
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function put( array $args, array $assoc_args ) {
 		$this->non_persistent_warning();
@@ -274,12 +308,27 @@ class Cache extends WP_CLI_Command {
 		}
 	}
 
+	/**
+	 * Generate a label for a given transient from the key and prefix.
+	 *
+	 * @param  string $key        Transient key.
+	 * @param  array  $assoc_args Associative arguments.
+	 *
+	 * @return string
+	 */
 	protected function generate_label( string $key, array $assoc_args ) {
 		return isset( $assoc_args['prefix'] )
 			? $assoc_args['prefix'] . ':' . $key
 			: $key;
 	}
 
+	/**
+	 * Cache repository factory method.
+	 *
+	 * @param  array $assoc_args Associative arguments.
+	 *
+	 * @return Metis\Cache\Repository
+	 */
 	protected function make_repository( array $assoc_args ) {
 		$prefix = '';
 
@@ -290,6 +339,9 @@ class Cache extends WP_CLI_Command {
 		return $this->cache->object_cache( $prefix );
 	}
 
+	/**
+	 * Warn the user if they are not using a persitent object cache backend.
+	 */
 	protected function non_persistent_warning() {
 		if ( wp_using_ext_object_cache() ) {
 			return;

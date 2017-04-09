@@ -1,4 +1,9 @@
 <?php
+/**
+ * Command_Provider class.
+ *
+ * @package metis
+ */
 
 namespace Metis\Command;
 
@@ -9,14 +14,26 @@ use Metis\Filesystem\Filesystem_Provider;
 use Metis\Container\Container_Aware_Trait;
 use Metis\Container\Bootable_Service_Provider_Interface;
 
-// @todo Warm page cache command?
+/**
+ * Defines the command provider class.
+ *
+ * @todo Consider implementing a command to warm full page caches.
+ */
 class Command_Provider implements Bootable_Service_Provider_Interface {
 	use Container_Aware_Trait;
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param Container $container Container instance.
+	 */
 	public function __construct( Container $container ) {
 		$this->set_container( $container );
 	}
 
+	/**
+	 * Provider specific boot logic.
+	 */
 	public function boot() {
 		if ( ! $this->is_cli() ) {
 			return;
@@ -38,6 +55,9 @@ class Command_Provider implements Bootable_Service_Provider_Interface {
 		);
 	}
 
+	/**
+	 * Provider specific registration logic.
+	 */
 	public function register() {
 		// Commands extend WP_CLI_Command which might not exist.
 		if ( ! $this->is_cli() ) {
@@ -73,6 +93,11 @@ class Command_Provider implements Bootable_Service_Provider_Interface {
 		);
 	}
 
+	/**
+	 * Determine if the current request is via WP-CLI.
+	 *
+	 * @return bool
+	 */
 	protected function is_cli() {
 		return defined( 'WP_CLI' ) && WP_CLI;
 	}

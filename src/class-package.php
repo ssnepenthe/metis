@@ -1,4 +1,9 @@
 <?php
+/**
+ * Package class.
+ *
+ * @package metis
+ */
 
 namespace Metis;
 
@@ -6,9 +11,18 @@ use Metis\Container\Container_Aware_Trait;
 use Illuminate\Contracts\Container\Container;
 use Metis\Container\Container_Aware_Interface;
 
+/**
+ * Defines the package class.
+ */
 class Package implements Container_Aware_Interface {
 	use Container_Aware_Trait;
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param array          $providers List of providers.
+	 * @param Container|null $container Container instance.
+	 */
 	public function __construct(
 		array $providers = [],
 		Container $container = null
@@ -20,10 +34,18 @@ class Package implements Container_Aware_Interface {
 		}
 	}
 
+	/**
+	 * Initialize the container.
+	 */
 	public function init() {
 		$this->container->init();
 	}
 
+	/**
+	 * Register a provider with the container.
+	 *
+	 * @param  Service_Provider_Interface|string $provider Provider or class name.
+	 */
 	public function register( $provider ) {
 		if ( is_string( $provider ) ) {
 			$provider = new $provider( $this->container );

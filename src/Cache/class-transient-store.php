@@ -1,18 +1,43 @@
 <?php
+/**
+ * Transient_Store class.
+ *
+ * @package metis
+ */
 
 namespace Metis\Cache;
 
 use wpdb;
 
-// @todo How to handle *_site_transient() functions?
+/**
+ * Defines the transient cache store class.
+ *
+ * @todo Consider *_site_transient() functions...
+ */
 class Transient_Store extends Abstract_Store {
+	/**
+	 * WordPress database instance.
+	 *
+	 * @var wpdb
+	 */
 	protected $db;
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param wpdb   $db     WordPress database instance.
+	 * @param string $prefix Cache prefix.
+	 */
 	public function __construct( wpdb $db, string $prefix = '' ) {
 		$this->db = $db;
 		$this->set_prefix( $prefix );
 	}
 
+	/**
+	 * Flush the cache.
+	 *
+	 * @return bool
+	 */
 	public function flush() {
 		if ( wp_using_ext_object_cache() ) {
 			return false;
@@ -29,6 +54,11 @@ class Transient_Store extends Abstract_Store {
 		return false === $count ? false : true;
 	}
 
+	/**
+	 * Flush expired entries from the cache.
+	 *
+	 * @return bool
+	 */
 	public function flush_expired() {
 		if ( wp_using_ext_object_cache() ) {
 			return false;
@@ -58,17 +88,41 @@ class Transient_Store extends Abstract_Store {
 		return false === $count ? false : true;
 	}
 
+	/**
+	 * Remove an entry from the cache.
+	 *
+	 * @param  string $key Cache key.
+	 *
+	 * @return bool
+	 */
 	public function forget( string $key ) {
 		return delete_transient( $this->hash_key( $key ) );
 	}
 
+	/**
+	 * Get an entry from the cache.
+	 *
+	 * @param  string $key Cache key.
+	 *
+	 * @return mixed
+	 */
 	public function get( string $key ) {
 		$value = get_transient( $this->hash_key( $key ) );
 
 		return false === $value ? null : $value;
 	}
 
-	// If saving to DB, will return false if existing value is same as new value.
+	/**
+	 * Put an entry in the cache.
+	 *
+	 * If saving to DB, will return false if existing value is same as new value.
+	 *
+	 * @param  string $key     Cache key.
+	 * @param  mixed  $value   The value to put in the cache.
+	 * @param  int    $seconds Time to cache expiration in seconds.
+	 *
+	 * @return bool
+	 */
 	public function put( string $key, $value, int $seconds ) {
 		return set_transient(
 			$this->hash_key( $key ),
@@ -77,10 +131,22 @@ class Transient_Store extends Abstract_Store {
 		);
 	}
 
+	/**
+	 * Hash a given key to create the real cache key.
+	 *
+	 * @param  string $key Desired cache key.
+	 *
+	 * @return string
+	 */
 	protected function hash_key( string $key ) {
 		return $this->prefix . parent::hash_key( $key );
 	}
 
+	/**
+	 * Set the cache prefix ensuring we won't go over the DB key limit.
+	 *
+	 * @param string $prefix Cache prefix.
+	 */
 	protected function set_prefix( string $prefix ) {
 		// SHA1 plus "_" take 41 characters which leaves us with 131 for our prefix.
 		if ( 131 < strlen( $prefix ) ) {

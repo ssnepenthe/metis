@@ -1,4 +1,9 @@
 <?php
+/**
+ * Transient command class.
+ *
+ * @package metis
+ */
 
 namespace Metis\Command;
 
@@ -12,11 +17,30 @@ use function WP_CLI\Utils\make_progress_bar;
 
 /**
  * Advanced transient management.
+ *
+ * @todo Consider adding increment/decrement commands.
  */
 class Transient extends WP_CLI_Command {
+	/**
+	 * Cache factory instance.
+	 *
+	 * @var Factory
+	 */
 	protected $cache;
+
+	/**
+	 * WordPress database instance.
+	 *
+	 * @var wpdb
+	 */
 	protected $db;
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param wpdb    $db    WordPress database instance.
+	 * @param Factory $cache Cache factory instance.
+	 */
 	public function __construct( wpdb $db, Factory $cache ) {
 		$this->db = $db;
 		$this->cache = $cache;
@@ -42,6 +66,9 @@ class Transient extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:transient add some_key "some value" 600
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function add( array $args, array $assoc_args ) {
 		list( $key, $value, $expiration ) = $args;
@@ -61,8 +88,6 @@ class Transient extends WP_CLI_Command {
 		}
 	}
 
-	public function decrement() {}
-
 	/**
 	 * Set a non-expiring transient value.
 	 *
@@ -80,6 +105,9 @@ class Transient extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:transient forever some_key "some value"
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function forever( array $args, array $assoc_args ) {
 		list( $key, $value ) = $args;
@@ -108,6 +136,9 @@ class Transient extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:transient forget some_key
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function forget( array $args, array $assoc_args ) {
 		list( $key ) = $args;
@@ -144,6 +175,9 @@ class Transient extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:transient flush
+	 *
+	 * @param array $_          Unused positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function flush( array $_, array $assoc_args ) {
 		$repository = $this->make_repository( $assoc_args );
@@ -189,6 +223,9 @@ class Transient extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:transient generate --count=100
+	 *
+	 * @param array $_          Unused positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function generate( array $_, array $assoc_args ) {
 		if ( wp_using_ext_object_cache() ) {
@@ -232,6 +269,9 @@ class Transient extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:transient get some_key
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function get( array $args, array $assoc_args ) {
 		list( $key ) = $args;
@@ -261,6 +301,9 @@ class Transient extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:transient has some_key
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function has( array $args, array $assoc_args ) {
 		list( $key ) = $args;
@@ -274,8 +317,6 @@ class Transient extends WP_CLI_Command {
 			WP_CLI::warning( "Transient [{$label}] is not set" );
 		}
 	}
-
-	public function increment() {}
 
 	/**
 	 * List all transients in the database (including expired).
@@ -300,6 +341,9 @@ class Transient extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:transient list
+	 *
+	 * @param array $_          Unused positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function list( array $_, array $assoc_args ) {
 		// @todo Some sort of pagination? Add expiration to output?
@@ -366,6 +410,9 @@ class Transient extends WP_CLI_Command {
 	 * ## EXAMPLES
 	 *
 	 *     $ wp metis:transient put some_key "some value" 600
+	 *
+	 * @param array $args       Positional arguments.
+	 * @param array $assoc_args Associative arguments.
 	 */
 	public function put( array $args, array $assoc_args ) {
 		list( $key, $value, $expiration ) = $args;
@@ -387,12 +434,27 @@ class Transient extends WP_CLI_Command {
 		}
 	}
 
+	/**
+	 * Generate a label for a given transient from the key and prefix.
+	 *
+	 * @param  string $key        Transient key.
+	 * @param  array  $assoc_args Associative arguments.
+	 *
+	 * @return string
+	 */
 	protected function generate_label( string $key, array $assoc_args ) {
 		return isset( $assoc_args['prefix'] )
 			? $assoc_args['prefix'] . ':' . $key
 			: $key;
 	}
 
+	/**
+	 * Cache repository factory method.
+	 *
+	 * @param  array $assoc_args Associative arguments.
+	 *
+	 * @return Metis\Cache\Repository
+	 */
 	protected function make_repository( array $assoc_args ) {
 		$prefix = '';
 
