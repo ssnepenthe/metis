@@ -36,7 +36,7 @@ class Transient_Store extends Abstract_Store {
 	/**
 	 * Flush the cache.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function flush() {
 		if ( wp_using_ext_object_cache() ) {
@@ -57,7 +57,7 @@ class Transient_Store extends Abstract_Store {
 	/**
 	 * Flush expired entries from the cache.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function flush_expired() {
 		if ( wp_using_ext_object_cache() ) {
@@ -93,7 +93,7 @@ class Transient_Store extends Abstract_Store {
 	 *
 	 * @param  string $key Cache key.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function forget( string $key ) {
 		return delete_transient( $this->hash_key( $key ) );
@@ -117,11 +117,11 @@ class Transient_Store extends Abstract_Store {
 	 *
 	 * If saving to DB, will return false if existing value is same as new value.
 	 *
-	 * @param  string $key     Cache key.
-	 * @param  mixed  $value   The value to put in the cache.
-	 * @param  int    $seconds Time to cache expiration in seconds.
+	 * @param  string  $key     Cache key.
+	 * @param  mixed   $value   The value to put in the cache.
+	 * @param  integer $seconds Time to cache expiration in seconds.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function put( string $key, $value, int $seconds ) {
 		return set_transient(

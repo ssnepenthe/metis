@@ -46,11 +46,11 @@ class Repository {
 	/**
 	 * Add an entry to the cache if it doesn't exists. Overridable within a store.
 	 *
-	 * @param  string $key     Cache key.
-	 * @param  mixed  $value   The value to put in the cache.
-	 * @param  int    $seconds Time to cache expiration in seconds.
+	 * @param  string  $key     Cache key.
+	 * @param  mixed   $value   The value to put in the cache.
+	 * @param  integer $seconds Time to cache expiration in seconds.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function add( string $key, $value, int $seconds ) {
 		if ( method_exists( $this->store, 'add' ) ) {
@@ -92,7 +92,7 @@ class Repository {
 	 *
 	 * @param  string $key Cache key.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function has( string $key ) {
 		return ! is_null( $this->get( $key ) );
@@ -118,7 +118,7 @@ class Repository {
 	 * Save the result of a closure call to the cache.
 	 *
 	 * @param  string  $key      Cache key.
-	 * @param  int     $seconds  Time to cache expiration in seconds.
+	 * @param  integer $seconds  Time to cache expiration in seconds.
 	 * @param  Closure $callback Callback to generate cache value.
 	 *
 	 * @return mixed

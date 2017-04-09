@@ -25,7 +25,7 @@ class Container extends IlluminateContainer {
 	/**
 	 * Whether the current instance has been hooked in to WordPress.
 	 *
-	 * @var bool
+	 * @var boolean
 	 */
 	protected $initialized = false;
 
@@ -68,7 +68,7 @@ class Container extends IlluminateContainer {
 	 * Register a provider instance.
 	 *
 	 * @param  Service_Provider $provider Provider instance.
-	 * @param  bool             $force    Override existing provider of same type.
+	 * @param  boolean          $force    Override existing provider of same type.
 	 */
 	public function register( Service_Provider $provider, bool $force = false ) {
 		$name = get_class( $provider );

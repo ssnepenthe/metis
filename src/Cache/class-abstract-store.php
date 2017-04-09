@@ -21,10 +21,10 @@ abstract class Abstract_Store implements Store_Interface {
 	/**
 	 * Decrement a cache entry.
 	 *
-	 * @param  string $key    Cache key.
-	 * @param  int    $amount The amount to increment by.
+	 * @param  string  $key    Cache key.
+	 * @param  integer $amount The amount to increment by.
 	 *
-	 * @return bool|int        False on failure, current value otherwise.
+	 * @return boolean|integer False on failure, current value otherwise.
 	 */
 	public function decrement( string $key, int $amount = 1 ) {
 		return $this->increment( $key, $amount * -1 );
@@ -36,7 +36,7 @@ abstract class Abstract_Store implements Store_Interface {
 	 * @param  string $key   Cache key.
 	 * @param  mixed  $value The value to save in the cache.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function forever( string $key, $value ) {
 		return $this->put( $key, $value, 0 );
@@ -71,10 +71,10 @@ abstract class Abstract_Store implements Store_Interface {
 	/**
 	 * Increment a cache entry.
 	 *
-	 * @param  string $key    The cache key.
-	 * @param  int    $amount The amount to increment by.
+	 * @param  string  $key    The cache key.
+	 * @param  integer $amount The amount to increment by.
 	 *
-	 * @return bool|int         False on failure, current value otherwise.
+	 * @return boolean|integer False on failure, current value otherwise.
 	 */
 	public function increment( string $key, int $amount = 1 ) {
 		// My preference would be to pre-set value to 0 if it doesn't already exist
@@ -102,8 +102,8 @@ abstract class Abstract_Store implements Store_Interface {
 	 *
 	 * Should be overridden in sub-classes where optimization is possible/practical.
 	 *
-	 * @param  array $values  List of keys to get from the cache.
-	 * @param  int   $seconds Time to cache expiration in seconds.
+	 * @param  array   $values  List of keys to get from the cache.
+	 * @param  integer $seconds Time to cache expiration in seconds.
 	 */
 	public function put_many( array $values, int $seconds ) {
 		array_walk( $values, function( $value, $key ) use ( $seconds ) {

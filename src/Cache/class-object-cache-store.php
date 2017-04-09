@@ -37,11 +37,11 @@ class Object_Cache_Store extends Abstract_Store {
 	/**
 	 * Add an entry to the cache if it does not already exist.
 	 *
-	 * @param string $key     Cache key.
-	 * @param mixed  $value   Value to save to the cache.
-	 * @param int    $seconds Time to cache expiration in seconds.
+	 * @param string  $key     Cache key.
+	 * @param mixed   $value   Value to save to the cache.
+	 * @param integer $seconds Time to cache expiration in seconds.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function add( string $key, $value, int $seconds ) {
 		return $this->cache->add(
@@ -55,10 +55,10 @@ class Object_Cache_Store extends Abstract_Store {
 	/**
 	 * Decrement a cache value.
 	 *
-	 * @param  string $key    Cache key.
-	 * @param  int    $amount Amount to decrement by.
+	 * @param  string  $key    Cache key.
+	 * @param  integer $amount Amount to decrement by.
 	 *
-	 * @return bool|int         False on failure, current value otherwise.
+	 * @return boolean|integer False on failure, current value otherwise.
 	 */
 	public function decrement( string $key, int $amount = 1 ) {
 		return $this->cache->decr( $this->hash_key( $key ), $amount, $this->prefix );
@@ -67,7 +67,7 @@ class Object_Cache_Store extends Abstract_Store {
 	/**
 	 * Flush the cache.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function flush() {
 		if ( ! empty( $this->prefix ) ) {
@@ -82,7 +82,7 @@ class Object_Cache_Store extends Abstract_Store {
 	 *
 	 * The object cache does not provide a method for handling this operation.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function flush_expired() {
 		return false;
@@ -93,7 +93,7 @@ class Object_Cache_Store extends Abstract_Store {
 	 *
 	 * @param  string $key Cache key.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function forget( string $key ) {
 		return $this->cache->delete( $this->hash_key( $key ), $this->prefix );
@@ -120,10 +120,10 @@ class Object_Cache_Store extends Abstract_Store {
 	/**
 	 * Increment a cache entry.
 	 *
-	 * @param  string $key    Cache key.
-	 * @param  int    $amount The amount to increment by.
+	 * @param  string  $key    Cache key.
+	 * @param  integer $amount The amount to increment by.
 	 *
-	 * @return bool|int         False on failure, current value otherwise.
+	 * @return boolean|integer False on failure, current value otherwise.
 	 */
 	public function increment( string $key, int $amount = 1 ) {
 		return $this->cache->incr( $this->hash_key( $key ), $amount, $this->prefix );
@@ -132,11 +132,11 @@ class Object_Cache_Store extends Abstract_Store {
 	/**
 	 * Put an entry in the cache.
 	 *
-	 * @param  string $key     Cache key.
-	 * @param  mixed  $value   The value to put in the cache.
-	 * @param  int    $seconds Time to cache expiration in seconds.
+	 * @param  string  $key     Cache key.
+	 * @param  mixed   $value   The value to put in the cache.
+	 * @param  integer $seconds Time to cache expiration in seconds.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	public function put( string $key, $value, int $seconds ) {
 		return $this->cache->set(
@@ -150,7 +150,7 @@ class Object_Cache_Store extends Abstract_Store {
 	/**
 	 * Flush a cache group if the installed object cache supports it.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function flush_group() {
 		// Pantheon redis object cache implements this method...

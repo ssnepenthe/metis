@@ -96,7 +96,7 @@ class Command_Provider implements Bootable_Service_Provider_Interface {
 	/**
 	 * Determine if the current request is via WP-CLI.
 	 *
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function is_cli() {
 		return defined( 'WP_CLI' ) && WP_CLI;

@@ -81,10 +81,9 @@ class Maintenance extends WP_CLI_Command {
 	 *     wp metis:maintenance toggle
 	 */
 	public function toggle() {
-		$status = WP_CLI::runcommand(
-			'metis:maintenance status',
-			[ 'return' => true ]
-		);
+		$status = WP_CLI::runcommand( 'metis:maintenance status', [
+			'return' => true,
+		] );
 
 		if ( false === strpos( $status, 'enabled' ) ) {
 			$command = 'down';
