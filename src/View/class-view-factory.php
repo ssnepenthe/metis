@@ -63,7 +63,7 @@ class View_Factory {
 		if ( ! $this->container->bound( $key ) ) {
 			$locators = $this->get_directory_locators( $dirs );
 
-			if ( 1 < count( $dirs ) ) {
+			if ( 1 < count( $locators ) ) {
 				$locator = new Template_Locator_Stack( $locators );
 			} else {
 				$locator = reset( $locators );
