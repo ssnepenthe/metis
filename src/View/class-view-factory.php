@@ -16,6 +16,11 @@ use Metis\Container\Container_Aware_Trait;
 class View_Factory {
 	use Container_Aware_Trait;
 
+	/**
+	 * Class constructor.
+	 *
+	 * @param Container $container Container instance.
+	 */
 	public function __construct( Container $container ) {
 		$this->set_container( $container );
 	}
