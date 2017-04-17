@@ -30,6 +30,8 @@ class View_Provider implements Service_Provider_Interface {
 	 * Perform view registrations.
 	 */
 	public function register() {
-		$this->container->bind( 'metis.view', View_Factory::class );
+		$this->container->bind( 'metis.view', function( Container $container ) {
+			return new View_Factory( $container );
+		} );
 	}
 }
