@@ -63,21 +63,21 @@ class Command_Provider extends Abstract_Bootable_Service_Provider {
 			new WordPress_Provider( $this->get_container() )
 		);
 
-		$this->get_container()->bind(
+		$this->get_container()->singleton(
 			'metis.command.cache',
 			function( Container $container ) {
 				return new Cache( $container->make( 'metis.cache' ) );
 			}
 		);
 
-		$this->get_container()->bind(
+		$this->get_container()->singleton(
 			'metis.command.maintenance',
 			function( Container $container ) {
 				return new Maintenance( $container->make( 'wp.filesystem' ) );
 			}
 		);
 
-		$this->get_container()->bind(
+		$this->get_container()->singleton(
 			'metis.command.transient',
 			function( Container $container ) {
 				return new Transient(
