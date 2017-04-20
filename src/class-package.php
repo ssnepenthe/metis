@@ -9,12 +9,11 @@ namespace Metis;
 
 use Metis\Container\Container_Aware_Trait;
 use Illuminate\Contracts\Container\Container;
-use Metis\Container\Container_Aware_Interface;
 
 /**
  * Defines the package class.
  */
-class Package implements Container_Aware_Interface {
+class Package {
 	use Container_Aware_Trait;
 
 	/**
