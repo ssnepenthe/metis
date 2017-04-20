@@ -1,6 +1,6 @@
 <?php
 /**
- * Factory class.
+ * Cache_Factory class.
  *
  * @package metis
  */
@@ -13,7 +13,7 @@ use Metis\Container\Container_Aware_Trait;
 /**
  * Defines the cache factory class.
  */
-class Factory {
+class Cache_Factory {
 	use Container_Aware_Trait;
 
 	/**

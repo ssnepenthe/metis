@@ -11,7 +11,7 @@ use wpdb;
 use WP_CLI;
 use WP_CLI_Command;
 use WP_CLI\Formatter;
-use Metis\Cache\Factory;
+use Metis\Cache\Cache_Factory;
 use function WP_CLI\Utils\get_flag_value;
 use function WP_CLI\Utils\make_progress_bar;
 
@@ -38,10 +38,10 @@ class Transient extends WP_CLI_Command {
 	/**
 	 * Class constructor.
 	 *
-	 * @param wpdb    $db    WordPress database instance.
-	 * @param Factory $cache Cache factory instance.
+	 * @param wpdb          $db    WordPress database instance.
+	 * @param Cache_Factory $cache Cache factory instance.
 	 */
-	public function __construct( wpdb $db, Factory $cache ) {
+	public function __construct( wpdb $db, Cache_Factory $cache ) {
 		$this->db = $db;
 		$this->cache = $cache;
 	}

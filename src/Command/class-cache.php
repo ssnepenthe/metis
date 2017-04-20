@@ -9,7 +9,7 @@ namespace Metis\Command;
 
 use WP_CLI;
 use WP_CLI_Command;
-use Metis\Cache\Factory;
+use Metis\Cache\Cache_Factory;
 
 /**
  * Advanced object cache management.
@@ -27,9 +27,9 @@ class Cache extends WP_CLI_Command {
 	/**
 	 * Class constructor.
 	 *
-	 * @param Factory $cache Cache factory instance.
+	 * @param Cache_Factory $cache Cache factory instance.
 	 */
-	public function __construct( Factory $cache ) {
+	public function __construct( Cache_Factory $cache ) {
 		$this->cache = $cache;
 	}
 

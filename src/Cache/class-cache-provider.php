@@ -27,7 +27,7 @@ class Cache_Provider extends Abstract_Service_Provider {
 		$this->container->singleton(
 			'metis.cache',
 			function( Container $container ) {
-				return new Factory( $container );
+				return new Cache_Factory( $container );
 			}
 		);
 	}
