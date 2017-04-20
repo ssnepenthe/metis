@@ -4,7 +4,7 @@ namespace Metis_Tests\Integration;
 
 use WP_UnitTestCase;
 use function Metis\app;
-use Metis\Cache\Factory;
+use Metis\Cache\Cache_Factory;
 use Metis\Container\Container;
 use Metis\Cache\Cache_Provider;
 
@@ -19,7 +19,7 @@ class Container_Test extends WP_UnitTestCase {
 	function app_provides_shorthand_for_resolving_service_from_container() {
 		app()->register( new Cache_Provider( app() ) );
 
-		$this->assertInstanceOf( Factory::class, app( 'metis.cache' ) );
+		$this->assertInstanceOf( Cache_Factory::class, app( 'metis.cache' ) );
 	}
 
 	/** @test */
