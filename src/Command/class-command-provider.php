@@ -29,17 +29,17 @@ class Command_Provider extends Abstract_Bootable_Service_Provider {
 
 		WP_CLI::add_command(
 			'metis:cache',
-			$this->container->make( 'metis.command.cache' )
+			$this->get_container()->make( 'metis.command.cache' )
 		);
 
 		WP_CLI::add_command(
 			'metis:maintenance',
-			$this->container->make( 'metis.command.maintenance' )
+			$this->get_container()->make( 'metis.command.maintenance' )
 		);
 
 		WP_CLI::add_command(
 			'metis:transient',
-			$this->container->make( 'metis.command.transient' )
+			$this->get_container()->make( 'metis.command.transient' )
 		);
 	}
 
@@ -63,21 +63,21 @@ class Command_Provider extends Abstract_Bootable_Service_Provider {
 			new WordPress_Provider( $this->get_container() )
 		);
 
-		$this->container->bind(
+		$this->get_container()->bind(
 			'metis.command.cache',
 			function( Container $container ) {
 				return new Cache( $container->make( 'metis.cache' ) );
 			}
 		);
 
-		$this->container->bind(
+		$this->get_container()->bind(
 			'metis.command.maintenance',
 			function( Container $container ) {
 				return new Maintenance( $container->make( 'wp.filesystem' ) );
 			}
 		);
 
-		$this->container->bind(
+		$this->get_container()->bind(
 			'metis.command.transient',
 			function( Container $container ) {
 				return new Transient(

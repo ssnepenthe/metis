@@ -24,7 +24,7 @@ class Cache_Provider extends Abstract_Service_Provider {
 			new WordPress_Provider( $this->get_container() )
 		);
 
-		$this->container->singleton(
+		$this->get_container()->singleton(
 			'metis.cache',
 			function( Container $container ) {
 				return new Cache_Factory( $container );

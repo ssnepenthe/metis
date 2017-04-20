@@ -37,7 +37,7 @@ class Package {
 	 * Initialize the container.
 	 */
 	public function init() {
-		$this->container->init();
+		$this->get_container()->init();
 	}
 
 	/**
@@ -47,9 +47,9 @@ class Package {
 	 */
 	public function register( $provider ) {
 		if ( is_string( $provider ) ) {
-			$provider = new $provider( $this->container );
+			$provider = new $provider( $this->get_container() );
 		}
 
-		$this->container->register( $provider );
+		$this->get_container()->register( $provider );
 	}
 }

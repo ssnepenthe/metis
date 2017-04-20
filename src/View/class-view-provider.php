@@ -18,8 +18,11 @@ class View_Provider extends Abstract_Service_Provider {
 	 * Perform view registrations.
 	 */
 	public function register() {
-		$this->container->bind( 'metis.view', function( Container $container ) {
-			return new View_Factory( $container );
-		} );
+		$this->get_container()->bind(
+			'metis.view',
+			function( Container $container ) {
+				return new View_Factory( $container );
+			}
+		);
 	}
 }

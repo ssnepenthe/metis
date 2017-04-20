@@ -36,7 +36,7 @@ class View_Factory {
 	public function overridable( $dirs ) {
 		$key = $this->get_instance_key( 'overridable', $dirs );
 
-		if ( ! $this->container->bound( $key ) ) {
+		if ( ! $this->get_container()->bound( $key ) ) {
 			$locator = new Template_Locator_Stack;
 			$locator->push( new Theme_Template_Locator );
 
@@ -44,10 +44,10 @@ class View_Factory {
 				$locator->push( $dir_locator );
 			}
 
-			$this->container->instance( $key, new Template( $locator ) );
+			$this->get_container()->instance( $key, new Template( $locator ) );
 		}
 
-		return $this->container->make( $key );
+		return $this->get_container()->make( $key );
 	}
 
 	/**
@@ -60,7 +60,7 @@ class View_Factory {
 	public function plugin( $dirs ) {
 		$key = $this->get_instance_key( 'plugin', $dirs );
 
-		if ( ! $this->container->bound( $key ) ) {
+		if ( ! $this->get_container()->bound( $key ) ) {
 			$locators = $this->get_directory_locators( $dirs );
 
 			if ( 1 < count( $locators ) ) {
@@ -69,10 +69,10 @@ class View_Factory {
 				$locator = reset( $locators );
 			}
 
-			$this->container->instance( $key, new Template( $locator ) );
+			$this->get_container()->instance( $key, new Template( $locator ) );
 		}
 
-		return $this->container->make( $key );
+		return $this->get_container()->make( $key );
 	}
 
 	/**
@@ -84,14 +84,14 @@ class View_Factory {
 	public function theme() {
 		$key = $this->get_instance_key( 'theme' );
 
-		if ( ! $this->container->bound( $key ) ) {
-			$this->container->instance(
+		if ( ! $this->get_container()->bound( $key ) ) {
+			$this->get_container()->instance(
 				$key,
 				new Template( new Theme_Template_Locator )
 			);
 		}
 
-		return $this->container->make( $key );
+		return $this->get_container()->make( $key );
 	}
 
 	/**
