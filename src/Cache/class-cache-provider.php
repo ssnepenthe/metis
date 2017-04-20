@@ -8,9 +8,9 @@
 namespace Metis\Cache;
 
 use Metis\Container\Container;
-use Metis\Database\Database_Provider;
 use Metis\Container\Container_Aware_Trait;
 use Metis\Container\Service_Provider_Interface;
+use Metis\WordPress\WordPress_Provider;
 
 /**
  * Defines the cache provider class.
@@ -31,13 +31,10 @@ class Cache_Provider implements Service_Provider_Interface {
 	 * Provider specific registration logic.
 	 */
 	public function register() {
-		$this->container->register( new Database_Provider( $this->container ) );
-
-		$this->container->bind( 'wp.object_cache', function() {
-			global $wp_object_cache;
-
-			return $wp_object_cache;
-		} );
+		$this->get_container()->register(
+			// Transient store depends on $wpdb, object cache on $wp_object_cache.
+			new WordPress_Provider( $this->get_container() )
+		);
 
 		$this->container->singleton(
 			'metis.cache',

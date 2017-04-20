@@ -10,9 +10,9 @@ namespace Metis\Command;
 use WP_CLI;
 use Metis\Container\Container;
 use Metis\Cache\Cache_Provider;
-use Metis\Filesystem\Filesystem_Provider;
 use Metis\Container\Container_Aware_Trait;
 use Metis\Container\Bootable_Service_Provider_Interface;
+use Metis\WordPress\WordPress_Provider;
 
 /**
  * Defines the command provider class.
@@ -64,9 +64,16 @@ class Command_Provider implements Bootable_Service_Provider_Interface {
 			return;
 		}
 
-		$this->container->register( new Cache_Provider( $this->container ) );
+		$this->get_container()->register(
+			// Needed by cache and transient commands.
+			new Cache_Provider( $this->get_container() )
+		);
 
-		$this->container->register( new Filesystem_Provider( $this->container ) );
+		$this->get_container()->register(
+			// Maintenance command depends on $wp_filesystem.
+			// Technically this is already registered by Cache_Provider.
+			new WordPress_Provider( $this->get_container() )
+		);
 
 		$this->container->bind(
 			'metis.command.cache',
