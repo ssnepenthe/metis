@@ -36,12 +36,14 @@ class Cache_Factory {
 		$key = $this->get_instance_key( 'transient', $prefix );
 
 		if ( ! $this->get_container()->bound( $key ) ) {
-			$this->get_container()->instance(
+			$this->get_container()->singleton(
 				$key,
-				new Repository( new Transient_Store(
-					$this->get_container()->make( 'wp.db' ),
-					$prefix
-				) )
+				function( Container $container ) use ( $prefix ) {
+					return new Repository( new Transient_Store(
+						$container->make( 'wp.db' ),
+						$prefix
+					) );
+				}
 			);
 		}
 
@@ -59,12 +61,14 @@ class Cache_Factory {
 		$key = $this->get_instance_key( 'object_cache', $prefix );
 
 		if ( ! $this->get_container()->bound( $key ) ) {
-			$this->get_container()->instance(
+			$this->get_container()->singleton(
 				$key,
-				new Repository( new Object_Cache_Store(
-					$this->get_container()->make( 'wp.object_cache' ),
-					$prefix
-				) )
+				function( Container $container ) use ( $prefix ) {
+					return new Repository( new Object_Cache_Store(
+						$this->get_container()->make( 'wp.object_cache' ),
+						$prefix
+					) );
+				}
 			);
 		}
 

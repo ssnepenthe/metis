@@ -37,14 +37,16 @@ class View_Factory {
 		$key = $this->get_instance_key( 'overridable', $dirs );
 
 		if ( ! $this->get_container()->bound( $key ) ) {
-			$locator = new Template_Locator_Stack;
-			$locator->push( new Theme_Template_Locator );
+			$this->get_container()->singleton( $key, function() use ( $dirs ) {
+				$locator = new Template_Locator_Stack;
+				$locator->push( new Theme_Template_Locator );
 
-			foreach ( $this->get_directory_locators( $dirs ) as $dir_locator ) {
-				$locator->push( $dir_locator );
-			}
+				foreach ( $this->get_directory_locators( $dirs ) as $dir_locator ) {
+					$locator->push( $dir_locator );
+				}
 
-			$this->get_container()->instance( $key, new Template( $locator ) );
+				return new Template( $locator );
+			} );
 		}
 
 		return $this->get_container()->make( $key );
@@ -61,15 +63,17 @@ class View_Factory {
 		$key = $this->get_instance_key( 'plugin', $dirs );
 
 		if ( ! $this->get_container()->bound( $key ) ) {
-			$locators = $this->get_directory_locators( $dirs );
+			$this->get_container()->singleton( $key, function() use ( $dirs ) {
+				$locators = $this->get_directory_locators( $dirs );
 
-			if ( 1 < count( $locators ) ) {
-				$locator = new Template_Locator_Stack( $locators );
-			} else {
-				$locator = reset( $locators );
-			}
+				if ( 1 < count( $locators ) ) {
+					$locator = new Template_Locator_Stack( $locators );
+				} else {
+					$locator = reset( $locators );
+				}
 
-			$this->get_container()->instance( $key, new Template( $locator ) );
+				return new Template( $locator );
+			} );
 		}
 
 		return $this->get_container()->make( $key );
@@ -85,10 +89,9 @@ class View_Factory {
 		$key = $this->get_instance_key( 'theme' );
 
 		if ( ! $this->get_container()->bound( $key ) ) {
-			$this->get_container()->instance(
-				$key,
-				new Template( new Theme_Template_Locator )
-			);
+			$this->get_container()->singleton( $key, function() {
+				return new Template( new Theme_Template_Locator );
+			} );
 		}
 
 		return $this->get_container()->make( $key );
