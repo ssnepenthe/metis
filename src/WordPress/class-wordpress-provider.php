@@ -1,10 +1,21 @@
 <?php
+/**
+ * WordPress_Provider class.
+ *
+ * @package metis
+ */
 
 namespace Metis\WordPress;
 
 use Metis\Container\Abstract_Service_Provider;
 
+/**
+ * Defines the WordPress provider class.
+ */
 class WordPress_Provider extends Abstract_Service_Provider {
+	/**
+	 * Provider specific registration logic.
+	 */
 	public function register() {
 		global $wp, $wpdb, $wp_rewrite, $wp_query;
 

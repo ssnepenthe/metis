@@ -16,7 +16,7 @@ use Metis\Container\Bootable_Service_Provider_Interface as Bootable_Service_Prov
  */
 class Container extends IlluminateContainer {
 	/**
-	 * List of bootable providers and whether they have been booted.
+	 * List of providers that still need to be booted.
 	 *
 	 * @var array
 	 */
@@ -60,6 +60,13 @@ class Container extends IlluminateContainer {
 		$this->initialized = true;
 	}
 
+	/**
+	 * Check whether a given provider has been registered.
+	 *
+	 * @param  Service_Provider|string $name Service provider to check for.
+	 *
+	 * @return boolean
+	 */
 	public function is_registered( $name ) {
 		if ( is_object( $name ) ) {
 			$name = get_class( $name );
