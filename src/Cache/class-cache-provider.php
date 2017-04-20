@@ -8,25 +8,13 @@
 namespace Metis\Cache;
 
 use Metis\Container\Container;
-use Metis\Container\Container_Aware_Trait;
-use Metis\Container\Service_Provider_Interface;
 use Metis\WordPress\WordPress_Provider;
+use Metis\Container\Abstract_Service_Provider;
 
 /**
  * Defines the cache provider class.
  */
-class Cache_Provider implements Service_Provider_Interface {
-	use Container_Aware_Trait;
-
-	/**
-	 * Class constructor.
-	 *
-	 * @param Container $container Container instance.
-	 */
-	public function __construct( Container $container ) {
-		$this->set_container( $container );
-	}
-
+class Cache_Provider extends Abstract_Service_Provider {
 	/**
 	 * Provider specific registration logic.
 	 */

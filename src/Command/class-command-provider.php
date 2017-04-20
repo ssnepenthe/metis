@@ -10,27 +10,15 @@ namespace Metis\Command;
 use WP_CLI;
 use Metis\Container\Container;
 use Metis\Cache\Cache_Provider;
-use Metis\Container\Container_Aware_Trait;
-use Metis\Container\Bootable_Service_Provider_Interface;
 use Metis\WordPress\WordPress_Provider;
+use Metis\Container\Abstract_Bootable_Service_Provider;
 
 /**
  * Defines the command provider class.
  *
  * @todo Consider implementing a command to warm full page caches.
  */
-class Command_Provider implements Bootable_Service_Provider_Interface {
-	use Container_Aware_Trait;
-
-	/**
-	 * Class constructor.
-	 *
-	 * @param Container $container Container instance.
-	 */
-	public function __construct( Container $container ) {
-		$this->set_container( $container );
-	}
-
+class Command_Provider extends Abstract_Bootable_Service_Provider {
 	/**
 	 * Provider specific boot logic.
 	 */
