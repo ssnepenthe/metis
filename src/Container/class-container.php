@@ -20,7 +20,7 @@ class Container extends IlluminateContainer {
 	 *
 	 * @var array
 	 */
-	protected $booted_providers = [];
+	protected $boot_pending = [];
 
 	/**
 	 * Whether the current instance has been hooked in to WordPress.
@@ -40,11 +40,7 @@ class Container extends IlluminateContainer {
 	 * Loop through registered providers and call boot where applicable.
 	 */
 	public function boot() {
-		foreach ( $this->booted_providers as $name => $booted ) {
-			if ( $booted ) {
-				continue;
-			}
-
+		foreach ( $this->boot_pending as $name => $_ ) {
 			$this->boot_provider( $this->registered_providers[ $name ] );
 		}
 	}
@@ -64,6 +60,14 @@ class Container extends IlluminateContainer {
 		$this->initialized = true;
 	}
 
+	public function is_registered( $name ) {
+		if ( is_object( $name ) ) {
+			$name = get_class( $name );
+		}
+
+		return isset( $this->registered_providers[ $name ] );
+	}
+
 	/**
 	 * Register a provider instance.
 	 *
@@ -73,7 +77,7 @@ class Container extends IlluminateContainer {
 	public function register( Service_Provider $provider, bool $force = false ) {
 		$name = get_class( $provider );
 
-		if ( isset( $this->registered_providers[ $name ] ) && ! $force ) {
+		if ( $this->is_registered( $name ) && ! $force ) {
 			return;
 		}
 
@@ -83,7 +87,7 @@ class Container extends IlluminateContainer {
 			return;
 		}
 
-		$this->booted_providers[ $name ] = false;
+		$this->boot_pending[ $name ] = true;
 	}
 
 	/**
@@ -93,7 +97,7 @@ class Container extends IlluminateContainer {
 	 */
 	protected function boot_provider( Bootable_Service_Provider $provider ) {
 		$provider->boot();
-		$this->booted_providers[ get_class( $provider ) ] = true;
+		unset( $this->boot_pending[ get_class( $provider ) ] );
 	}
 
 	/**
