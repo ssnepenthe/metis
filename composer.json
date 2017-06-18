@@ -1,6 +1,6 @@
 {
   "name": "ssnepenthe/metis",
-  "description": "Just some tools for simplifying some WordPress development tasks.",
+  "description": "Pimple, with some helpful tweaks for working in WordPress",
   "type": "library",
   "homepage": "https://github.com/ssnepenthe/metis",
   "license": "GPL-2.0",
