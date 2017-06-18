@@ -1,11 +1,26 @@
 <?php
+/**
+ * WordPress_Provider class.
+ *
+ * @package metis
+ */
 
 namespace Metis;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
 
+/**
+ * Defines the WordPress provider class.
+ */
 class WordPress_Provider implements ServiceProviderInterface {
+	/**
+	 * Register a number of WordPress globals in the container.
+	 *
+	 * @param  Container $container The container instance.
+	 *
+	 * @return void
+	 */
 	public function register( Container $container ) {
 		global $wp, $wpdb, $wp_rewrite, $wp_query;
 
