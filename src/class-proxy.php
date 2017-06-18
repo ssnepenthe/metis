@@ -36,7 +36,7 @@ class Proxy {
 	 * @return mixed
 	 */
 	public function __call( $method, $args ) {
-		return call_user_func_array( [ $this->container[ $this->key ], $method ], $args );
+		return call_user_func_array( array( $this->container[ $this->key ], $method ), $args );
 	}
 
 	/**
