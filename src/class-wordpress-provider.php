@@ -17,7 +17,7 @@ class WordPress_Provider implements ServiceProviderInterface {
 	/**
 	 * Register a number of WordPress globals in the container.
 	 *
-	 * @param  Container $container The container instance.
+	 * @param  PimpleContainer $container The container instance.
 	 *
 	 * @return void
 	 */
