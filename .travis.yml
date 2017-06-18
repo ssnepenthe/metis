@@ -12,6 +12,10 @@ branches:
     - master
 
 php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
   - 7.0
   - 7.1
   - nightly
@@ -38,12 +42,10 @@ before_script:
     else
       composer global require "phpunit/phpunit=5.7.*"
     fi
-  - composer global require "mockery/mockery=0.9.*"
   - |
     composer global require wp-coding-standards/wpcs
     phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
 
 script:
   - phpcs --standard=phpcs.ruleset.xml $(find . -name '*.php')
-  - phpunit --bootstrap=tests/unit/bootstrap.php --testsuite=unit
-  - phpunit --bootstrap=tests/integration/bootstrap.php --testsuite=integration
+  - phpunit
