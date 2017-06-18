@@ -13,10 +13,5 @@
   },
   "autoload": {
     "classmap": ["src/"]
-  },
-  "scripts": {
-    "integration": "phpunit --bootstrap=tests/integration/bootstrap.php --color=always --testsuite=integration",
-    "unit": "phpunit --bootstrap=tests/unit/bootstrap.php --color=always --testsuite=unit",
-    "test": ["@integration", "@unit"]
   }
 }
