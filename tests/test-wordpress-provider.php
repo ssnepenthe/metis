@@ -2,14 +2,14 @@
 
 namespace Metis_Tests;
 
-use Metis\Container;
 use WP_UnitTestCase;
 use Metis\WordPress_Provider;
+use Metis\Container as MetisContainer;
 
 class WordPress_Provider_Test extends WP_UnitTestCase {
 	/** @test */
 	public function it_provides_access_to_wp_globals_from_container() {
-		$container = new Container;
+		$container = new MetisContainer;
 		$container->register( new WordPress_Provider );
 
 		$this->assertSame( $GLOBALS['wp'], $container['wp'] );

@@ -3,14 +3,14 @@
 namespace Metis_Tests;
 
 use WP_UnitTestCase;
-use Metis\Container;
+use Metis\Container as MetisContainer;
 
 class Proxy_Test extends WP_UnitTestCase {
 	/** @test */
 	public function it_lazily_resolves_container_entries() {
 		global $metis_proxy_test_global;
 
-		$container = new Container;
+		$container = new MetisContainer;
 		$container['a'] = function() {
 			return new A;
 		};
@@ -27,7 +27,7 @@ class Proxy_Test extends WP_UnitTestCase {
 
 	/** @test */
 	public function it_proxies_all_method_calls() {
-		$container = new Container;
+		$container = new MetisContainer;
 		$container['b'] = function() {
 			return new B;
 		};

@@ -3,9 +3,9 @@
 namespace Metis_Tests;
 
 use Metis\Proxy;
-use Metis\Container;
 use WP_UnitTestCase;
 use Pimple\ServiceProviderInterface;
+use Metis\Container as MetisContainer;
 use Pimple\Container as PimpleContainer;
 
 class Container_Test extends WP_UnitTestCase {
@@ -19,7 +19,7 @@ class Container_Test extends WP_UnitTestCase {
 	public function it_can_invoke_activate_on_all_providers() {
 		global $metis_container_test_global;
 
-		$container = new Container;
+		$container = new MetisContainer;
 		$container->register( new A_Provider );
 
 		$this->assertEmpty( $metis_container_test_global );
@@ -33,7 +33,7 @@ class Container_Test extends WP_UnitTestCase {
 	public function it_can_invoke_boot_on_all_providers() {
 		global $metis_container_test_global;
 
-		$container = new Container;
+		$container = new MetisContainer;
 		$container->register( new A_Provider );
 
 		$this->assertEmpty( $metis_container_test_global );
@@ -47,7 +47,7 @@ class Container_Test extends WP_UnitTestCase {
 	public function it_can_invoke_deactivate_on_all_providers() {
 		global $metis_container_test_global;
 
-		$container = new Container;
+		$container = new MetisContainer;
 		$container->register( new A_Provider );
 
 		$this->assertEmpty( $metis_container_test_global );
@@ -61,7 +61,7 @@ class Container_Test extends WP_UnitTestCase {
 	public function it_can_invoke_them_all() {
 		global $metis_container_test_global;
 
-		$container = new Container;
+		$container = new MetisContainer;
 		$container->register( new A_Provider );
 		$container->register( new B_Provider );
 		$container->register( new C_Provider );
@@ -86,7 +86,7 @@ class Container_Test extends WP_UnitTestCase {
 
 	/** @test */
 	public function it_can_create_a_proxy_instance() {
-		$container = new Container;
+		$container = new MetisContainer;
 		$container->register( new A_Provider );
 
 		$this->assertInstanceOf( 'Metis\\Proxy', $container->proxy( 'a' ) );
