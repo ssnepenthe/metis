@@ -121,3 +121,5 @@ $container['wp'] === $GLOBALS['wp']; // true
 ```
 
 `$wp`, `$wpdb`, `$wp_query`, `$wp_rewrite`, `$wp_filesystem` and `$wp_object_cache` are all added to the container.
+
+Be careful about timing when using these - each returns null if it has not yet been defined.

@@ -22,12 +22,21 @@ class WordPress_Provider implements ServiceProviderInterface {
 	 * @return void
 	 */
 	public function register( PimpleContainer $container ) {
-		global $wp, $wpdb, $wp_rewrite, $wp_query;
+		$container['wp'] = function( PimpleContainer $c ) {
+			return isset( $GLOBALS['wp'] ) ? $GLOBALS['wp'] : null;
+		};
 
-		$container['wp'] = $wp;
-		$container['wpdb'] = $wpdb;
-		$container['wp_query'] = $wp_query;
-		$container['wp_rewrite'] = $wp_rewrite;
+		$container['wpdb'] = function( PimpleContainer $c ) {
+			return isset( $GLOBALS['wpdb'] ) ? $GLOBALS['wpdb'] : null;
+		};
+
+		$container['wp_query'] = function( PimpleContainer $c ) {
+			return isset( $GLOBALS['wp_query'] ) ? $GLOBALS['wp_query'] : null;
+		};
+
+		$container['wp_rewrite'] = function( PimpleContainer $c ) {
+			return isset( $GLOBALS['wp_rewrite'] ) ? $GLOBALS['wp_rewrite'] : null;
+		};
 
 		$container['wp_filesystem'] = function( PimpleContainer $c ) {
 			if ( ! function_exists( 'WP_Filesystem' ) ) {
