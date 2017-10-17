@@ -20,13 +20,13 @@ class Container_Test extends WP_UnitTestCase {
 		global $metis_container_test_global;
 
 		$container = new MetisContainer;
-		$container->register( new A_Provider );
+		$container->register( new C_A_Provider );
 
 		$this->assertEmpty( $metis_container_test_global );
 
 		$container->activate();
 
-		$this->assertEquals( array( 'A_Provider activated' ), $metis_container_test_global );
+		$this->assertEquals( array( 'C_A_Provider activated' ), $metis_container_test_global );
 	}
 
 	/** @test */
@@ -34,13 +34,13 @@ class Container_Test extends WP_UnitTestCase {
 		global $metis_container_test_global;
 
 		$container = new MetisContainer;
-		$container->register( new A_Provider );
+		$container->register( new C_A_Provider );
 
 		$this->assertEmpty( $metis_container_test_global );
 
 		$container->boot();
 
-		$this->assertEquals( array( 'A_Provider booted' ), $metis_container_test_global );
+		$this->assertEquals( array( 'C_A_Provider booted' ), $metis_container_test_global );
 	}
 
 	/** @test */
@@ -48,13 +48,13 @@ class Container_Test extends WP_UnitTestCase {
 		global $metis_container_test_global;
 
 		$container = new MetisContainer;
-		$container->register( new A_Provider );
+		$container->register( new C_A_Provider );
 
 		$this->assertEmpty( $metis_container_test_global );
 
 		$container->deactivate();
 
-		$this->assertEquals( array( 'A_Provider deactivated' ), $metis_container_test_global );
+		$this->assertEquals( array( 'C_A_Provider deactivated' ), $metis_container_test_global );
 	}
 
 	/** @test */
@@ -62,9 +62,9 @@ class Container_Test extends WP_UnitTestCase {
 		global $metis_container_test_global;
 
 		$container = new MetisContainer;
-		$container->register( new A_Provider );
-		$container->register( new B_Provider );
-		$container->register( new C_Provider );
+		$container->register( new C_A_Provider );
+		$container->register( new C_B_Provider );
+		$container->register( new C_C_Provider );
 
 		$this->assertEmpty( $metis_container_test_global );
 
@@ -74,11 +74,11 @@ class Container_Test extends WP_UnitTestCase {
 
 		$this->assertEquals(
 			array(
-				'A_Provider activated',
-				'B_Provider activated',
-				'A_Provider booted',
-				'C_Provider booted',
-				'A_Provider deactivated',
+				'C_A_Provider activated',
+				'C_B_Provider activated',
+				'C_A_Provider booted',
+				'C_C_Provider booted',
+				'C_A_Provider deactivated',
 			),
 			$metis_container_test_global
 		);
@@ -93,43 +93,43 @@ class Container_Test extends WP_UnitTestCase {
 	}
 }
 
-class A_Provider implements ServiceProviderInterface {
+class C_A_Provider implements ServiceProviderInterface {
 	public function activate() {
 		global $metis_container_test_global;
 
-		$metis_container_test_global[] = 'A_Provider activated';
+		$metis_container_test_global[] = 'C_A_Provider activated';
 	}
 
 	public function boot() {
 		global $metis_container_test_global;
 
-		$metis_container_test_global[] = 'A_Provider booted';
+		$metis_container_test_global[] = 'C_A_Provider booted';
 	}
 
 	public function deactivate() {
 		global $metis_container_test_global;
 
-		$metis_container_test_global[] = 'A_Provider deactivated';
+		$metis_container_test_global[] = 'C_A_Provider deactivated';
 	}
 
 	public function register( PimpleContainer $container ) {}
 }
 
-class B_Provider implements ServiceProviderInterface {
+class C_B_Provider implements ServiceProviderInterface {
 	public function activate() {
 		global $metis_container_test_global;
 
-		$metis_container_test_global[] = 'B_Provider activated';
+		$metis_container_test_global[] = 'C_B_Provider activated';
 	}
 
 	public function register( PimpleContainer $container ) {}
 }
 
-class C_Provider implements ServiceProviderInterface {
+class C_C_Provider implements ServiceProviderInterface {
 	public function boot() {
 		global $metis_container_test_global;
 
-		$metis_container_test_global[] = 'C_Provider booted';
+		$metis_container_test_global[] = 'C_C_Provider booted';
 	}
 
 	public function register( PimpleContainer $container ) {}
