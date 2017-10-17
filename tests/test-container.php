@@ -2,7 +2,6 @@
 
 namespace Metis_Tests;
 
-use Metis\Proxy;
 use WP_UnitTestCase;
 use Pimple\ServiceProviderInterface;
 use Metis\Container as MetisContainer;
@@ -82,14 +81,6 @@ class Container_Test extends WP_UnitTestCase {
 			),
 			$metis_container_test_global
 		);
-	}
-
-	/** @test */
-	public function it_can_create_a_proxy_instance() {
-		$container = new MetisContainer;
-		$container->register( new A_Provider );
-
-		$this->assertInstanceOf( 'Metis\\Proxy', $container->proxy( 'a' ) );
 	}
 }
 

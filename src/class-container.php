@@ -22,13 +22,6 @@ class Container extends PimpleContainer {
 	protected $providers = array();
 
 	/**
-	 * Cached proxy objects.
-	 *
-	 * @var Proxy[]
-	 */
-	protected $proxies = array();
-
-	/**
 	 * Loop through all registered providers and call the activate method.
 	 *
 	 * @return void
@@ -53,23 +46,6 @@ class Container extends PimpleContainer {
 	 */
 	public function deactivate() {
 		$this->invoke_on_providers( 'deactivate' );
-	}
-
-	/**
-	 * Get a proxy object for a given container entry.
-	 *
-	 * @param  string $key Container key.
-	 *
-	 * @return Proxy
-	 */
-	public function proxy( $key ) {
-		if ( isset( $this->proxies[ $key ] ) ) {
-			return $this->proxies[ $key ];
-		}
-
-		$this->proxies[ $key ] = new Proxy( $this, $key );
-
-		return $this->proxies[ $key ];
 	}
 
 	/**
