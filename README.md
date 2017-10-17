@@ -63,53 +63,65 @@ $container->register( new Another_Provider );
 add_action( 'plugins_loaded', array( $container, 'boot' ) );
 ```
 
-**Defer object creation until the first method call**
+**Service Proxies**
 
-This is useful when you want to attach an object to WordPress but not actually create it until it is needed.
+One of the many benefits of a dependency injection container like Pimple is that objects are created on demand as you access the various container entries.
 
-Consider the following:
+This can be especially useful for functionality that is only needed on a limited number of requests (e.g. admin, cron, etc.).
 
-```
-class Admin_Provider implements Pimple\ServiceProviderInterface {
-    public function boot( Pimple\Container $container ) {
-        add_action( 'admin_init', array( $container['admin_page'], 'add_page' ) );
-        add_action( 'admin_menu', array( $container['admin_page'], 'add_options' ) );
-    }
-
-    // ...
-}
-
-$container = new Metis\Container;
-$container->register( new Admin_Provider );
-
-add_action( 'plugins_loaded', array( $container, 'boot' ) );
-```
-
-This will create an `admin_page` instance on every request even though it is only needed on requests within wp-admin.
-
-There are many ways to work around this, but Metis provides service proxies for this exact purpose.
-
-Here it is rewritten with proxies:
+Unfortunately this doesn't always work the way you might want in WordPress:
 
 ```
 class Admin_Provider implements Pimple\ServiceProviderInterface {
     public function boot( Pimple\Container $container ) {
-        add_action( 'admin_init', array( $container->proxy( 'admin_page' ), 'add_page' ) );
-        add_action( 'admin_menu', array( $container->proxy( 'admin_page' ), 'add_options' ) );
+        add_action( 'admin_init', array( $container['admin_page'], 'do_something' ) );
     }
-
-    // ...
 }
-
-$container = new Metis\Container;
-$container->register( new Admin_Provider );
-
-add_action( 'plugins_loaded', array( $container, 'boot' ) );
 ```
 
-This prevents the `admin_page` instance from being created until one of the `admin_init` or `admin_menu` hooks has actually fired.
+Since the `boot()` method is typically attached to the `plugins_loaded` hook, the admin page object will always be created regardless of whether `admin_init` has been triggered.
 
-This was a trivial example, of course, but it is perfect for cases when a class has many dependencies and is only used on a small number of requests.
+A sensible approach would be to verify that the current request is for an admin page before calling `add_action()`:
+
+```
+class Admin_Provider implements Pimple\ServiceProviderInterface {
+    public function boot( Pimple\Container $container ) {
+        if ( is_admin() ) {
+            add_action( 'admin_init', array( $container['admin_page'], 'do_something' ) );
+        }
+    }
+}
+```
+
+But this results in a boot method littered with conditionals.
+
+An alternative would be to access the `admin_page` entry within a closure:
+
+```
+class Admin_Provider implements Pimple\ServiceProviderInterface {
+    public function boot( Pimple\Container $container ) {
+        add_action( 'admin_init', function() use ( $container ) {
+            $container['admin_page']->do_something();
+        }
+    }
+}
+```
+
+But that gets tedious quickly and can result in a large number of unnecessary `Closure` objects floating around.
+
+In cases like this, you might choose to extend `Metis\Base_Provider` and use the `proxy()` method instead:
+
+```
+class Admin_Provider extends Metis\Base_Provider {
+    public function boot( Pimple\Container $container ) {
+        add_action( 'admin_init', array( $this->proxy( $container, 'admin_page' ), 'do_something' ) );
+    }
+}
+```
+
+This will create a `Metis\Proxy` object to be used in place of the admin page object. The proxy will correctly proxy all method calls to the underlying service from the container but hold off on creation of that service until it is actually needed.
+
+This was a trivial example, of course, but proxies are perfect for cases when a class has many dependencies and is only used on a small number of requests.
 
 **Access WordPress globals from the container**
 
