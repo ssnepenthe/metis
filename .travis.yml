@@ -11,41 +11,56 @@ branches:
   only:
     - master
 
-php:
-  - 5.3
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7.0
-  - 7.1
-  - nightly
-
-env:
-  - WP_VERSION=latest WP_MULTISITE=0
-  - WP_VERSION=trunk WP_MULTISITE=0
-
 matrix:
   allow_failures:
     - php: nightly
-    - env: WP_VERSION=trunk WP_MULTISITE=0
+    - env: WP_VERSION=trunk
   fast_finish: true
+  include:
+    - php: 5.4
+      env: WP_VERSION=latest
+    - php: 5.5
+      env: WP_VERSION=latest
+    - php: 5.6
+      env: WP_VERSION=latest
+    - php: 5.6
+      env: WP_VERSION=trunk
+    - php: 5.6
+      env: WP_TRAVISCI=phpcs
+    - php: 7.0
+      env: WP_VERSION=latest
+    - php: 7.1
+      env: WP_VERSION=latest
+    - php: nightly
+      env: WP_VERSION=latest
 
 install:
   - composer install --no-interaction --optimize-autoloader --prefer-dist
 
 before_script:
-  - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
   - export PATH="$HOME/.composer/vendor/bin:$PATH"
   - |
-    if [[ ${TRAVIS_PHP_VERSION:0:2} == "5." ]]; then
-      composer global require "phpunit/phpunit=4.8.*"
-    else
-      composer global require "phpunit/phpunit=5.7.*"
+    if [[ ! -z "$WP_VERSION" ]] ; then
+      bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+      if [[ ${TRAVIS_PHP_VERSION:0:2} == "5." ]]; then
+        composer global require "phpunit/phpunit=4.8.*"
+      else
+        composer global require "phpunit/phpunit=5.7.*"
+      fi
     fi
   - |
-    composer global require wp-coding-standards/wpcs
-    phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+    if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
+      composer global require wp-coding-standards/wpcs
+      phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+    fi
 
 script:
-  - phpcs --standard=phpcs.ruleset.xml $(find . -name '*.php')
-  - phpunit
+  - |
+    if [[ ! -z "$WP_VERSION" ]] ; then
+      phpunit
+      WP_MULTISITE=1 phpunit
+    fi
+  - |
+    if [[ "$WP_TRAVISCI" == "phpcs" ]] ; then
+      phpcs
+    fi

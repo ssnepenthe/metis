@@ -4,6 +4,8 @@
 ## Requirements
 PHP 5.3 or later and Composer.
 
+**Note:** Metis should continue to work down to 5.3 but is no longer tested below 5.4.
+
 ## Installation
 ```
 $ composer require ssnepenthe/metis
