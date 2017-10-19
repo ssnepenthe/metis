@@ -22,23 +22,23 @@ class WordPress_Provider implements ServiceProviderInterface {
 	 * @return void
 	 */
 	public function register( PimpleContainer $container ) {
-		$container['wp'] = function( PimpleContainer $c ) {
+		$container['wp'] = $container->factory( function() {
 			return isset( $GLOBALS['wp'] ) ? $GLOBALS['wp'] : null;
-		};
+		} );
 
-		$container['wpdb'] = function( PimpleContainer $c ) {
+		$container['wpdb'] = $container->factory( function() {
 			return isset( $GLOBALS['wpdb'] ) ? $GLOBALS['wpdb'] : null;
-		};
+		} );
 
-		$container['wp_query'] = function( PimpleContainer $c ) {
+		$container['wp_query'] = $container->factory( function() {
 			return isset( $GLOBALS['wp_query'] ) ? $GLOBALS['wp_query'] : null;
-		};
+		} );
 
-		$container['wp_rewrite'] = function( PimpleContainer $c ) {
+		$container['wp_rewrite'] = $container->factory( function() {
 			return isset( $GLOBALS['wp_rewrite'] ) ? $GLOBALS['wp_rewrite'] : null;
-		};
+		} );
 
-		$container['wp_filesystem'] = function( PimpleContainer $c ) {
+		$container['wp_filesystem'] = $container->factory( function() {
 			if ( ! function_exists( 'WP_Filesystem' ) ) {
 				require_once ABSPATH . '/wp-admin/includes/file.php';
 			}
@@ -48,14 +48,14 @@ class WordPress_Provider implements ServiceProviderInterface {
 			}
 
 			return $GLOBALS['wp_filesystem'];
-		};
+		} );
 
-		$container['wp_object_cache'] = function( PimpleContainer $c ) {
+		$container['wp_object_cache'] = $container->factory( function() {
 			if ( ! isset( $GLOBALS['wp_object_cache'] ) && function_exists( 'wp_cache_init' ) ) {
 				wp_cache_init();
 			}
 
 			return isset( $GLOBALS['wp_object_cache'] ) ? $GLOBALS['wp_object_cache'] : null;
-		};
+		} );
 	}
 }
