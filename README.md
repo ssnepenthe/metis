@@ -76,6 +76,8 @@ class Admin_Provider implements Pimple\ServiceProviderInterface {
     public function boot( Pimple\Container $container ) {
         add_action( 'admin_init', array( $container['admin_page'], 'do_something' ) );
     }
+
+    // ...
 }
 ```
 
@@ -90,6 +92,8 @@ class Admin_Provider implements Pimple\ServiceProviderInterface {
             add_action( 'admin_init', array( $container['admin_page'], 'do_something' ) );
         }
     }
+
+    // ...
 }
 ```
 
@@ -104,6 +108,8 @@ class Admin_Provider implements Pimple\ServiceProviderInterface {
             $container['admin_page']->do_something();
         }
     }
+
+    // ...
 }
 ```
 
@@ -116,6 +122,8 @@ class Admin_Provider extends Metis\Base_Provider {
     public function boot( Pimple\Container $container ) {
         add_action( 'admin_init', array( $this->proxy( $container, 'admin_page' ), 'do_something' ) );
     }
+
+    // ...
 }
 ```
 
