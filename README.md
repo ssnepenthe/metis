@@ -14,7 +14,7 @@ $ composer require ssnepenthe/metis
 ## Usage
 This is basically Pimple but you will use `Metis\Container` instead of `Pimple\Container`.
 
-The following features have been introduced:
+The following features have been added:
 
 **Handle activation and deactivation logic within your service providers**
 
@@ -65,7 +65,7 @@ add_action( 'plugins_loaded', array( $container, 'boot' ) );
 
 **Service Proxies**
 
-One of the many benefits of a dependency injection container like Pimple is that objects are created on demand as you access the various container entries.
+One of the many benefits of a dependency injection container like Pimple is that objects are created on demand as you access their container entries.
 
 This can be especially useful for functionality that is only needed on a limited number of requests (e.g. admin, cron, etc.).
 
@@ -99,7 +99,7 @@ class Admin_Provider implements Pimple\ServiceProviderInterface {
 
 But this results in a boot method littered with conditionals.
 
-An alternative would be to access the `admin_page` entry within a closure:
+An alternative would be to access the `admin_page` entry within an anonymous function:
 
 ```php
 class Admin_Provider implements Pimple\ServiceProviderInterface {
@@ -115,7 +115,7 @@ class Admin_Provider implements Pimple\ServiceProviderInterface {
 
 But that gets tedious quickly and can result in a large number of unnecessary `Closure` objects floating around.
 
-In cases like this, you might choose to extend `Metis\Base_Provider` and use the `proxy()` method instead:
+Instead, you might choose to extend `Metis\Base_Provider` and use the `proxy()` method:
 
 ```php
 class Admin_Provider extends Metis\Base_Provider {
@@ -127,9 +127,7 @@ class Admin_Provider extends Metis\Base_Provider {
 }
 ```
 
-This will create a `Metis\Proxy` object to be used in place of the admin page object. The proxy will correctly proxy all method calls to the underlying service from the container but hold off on creation of that service until it is actually needed.
-
-This was a trivial example, of course, but proxies are perfect for cases when a class has many dependencies and is only used on a small number of requests.
+This will create a `Metis\Proxy` object to be used in place of the admin page object. This object will correctly proxy all method calls to the underlying service from the container while holding off on creation of that service until it is actually needed.
 
 **Access WordPress globals from the container**
 
@@ -144,4 +142,4 @@ $container['wp'] === $GLOBALS['wp']; // true
 
 `$wp`, `$wpdb`, `$wp_query`, `$wp_rewrite`, `$wp_filesystem` and `$wp_object_cache` are all added to the container.
 
-Be careful about timing when using these - each returns null if it has not yet been defined.
+Be careful about timing when using these - each will return null if it has not yet been defined.
